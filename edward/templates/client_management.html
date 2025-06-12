@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client Management</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar styling */
+        .sidenav {
+            height: 100vh;
+            width: 220px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #2c3e50;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #ecf0f1;
+        }
+
+        .sidenav h2 {
+            color: #ecf0f1;
+            font-size: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidenav a {
+            width: 90%;
+            padding: 10px;
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 4px;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin: 5px 0;
+        }
+
+        .sidenav a:hover {
+            background-color: #34495e;
+        }
+
+        .logout-button {
+            margin-top: auto;
+            padding: 12px;
+            background-color: #e74c3c;
+            color: #ecf0f1;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+            width: 90%;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Main content styling */
+        .main {
+            margin-left: 250px; /* Sidebar width */
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto; /* Enable vertical scrolling */
+            height: 100vh; /* Ensure it occupies the viewport height */
+            box-sizing: border-box;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin: 0;
+        }
+
+        .add-client-button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .add-client-button:hover {
+            background-color: #0056b3;
+        }
+
+        .report-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .report-container th, .report-container td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .report-container th {
+            background-color: darkcyan;
+            color: white;
+        }
+
+        .report-container tbody tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons a, .action-buttons button {
+            padding: 5px 10px;
+            background-color: #333;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .action-buttons a:hover, .action-buttons button:hover {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidenav">
+        <h2>Admin Dashboard</h2>
+        <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+        <a href="{% url 'user_management' %}">User Management</a>
+        <a href="{% url 'site_statistics' %}">Site Statistics</a>
+        <a href="{% url 'client_management' %}">Client Management</a>
+        <a href="{% url 'reports' %}">Reports</a>
+        <a href="{% url 'settings' %}">Settings</a>
+        <a href="{% url 'notifications' %}">Notifications</a>
+        <a href="{% url 'logout' %}" class="logout-button">Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main">
+        <div class="header">
+            <h1>Client Management</h1>
+            <a href="{% url 'add_client' %}" class="add-client-button">Add New Client</a>
+        </div>
+
+        <div class="report-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Client Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                    <tr>
+                        <td>{{ client.id }}</td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.phone }}</td>
+                        <td>{{ client.status }}</td>
+                        <td class="action-buttons">
+                            <a href="{% url 'edit_client' client.id %}">Edit</a>
+                            <button onclick="confirmDelete('{{ client.id }}')">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete(clientId) {
+            if (confirm("Are you sure you want to delete this client?")) {
+                window.location.href = "{% url 'delete_client' '' %}".slice(0, -1) + clientId;
+            }
+        }
+    </script>
+</body>
+</html>

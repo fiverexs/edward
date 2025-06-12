@@ -1,0 +1,2279 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="images/x-icon" href="{% static 'images/logo.png' %}" >
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        /* Reset and basic styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+  --primary: #007bff;
+  --danger: #dc3545;
+  --success: #28a745;
+}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            min-height: 100vh;
+            color: #212529;
+        }
+
+        /* Sidebar styling */
+        .sidenav {
+            width: 250px;
+            background-color: #343a40;
+            color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidenav h2 {
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .sidenav a {
+            display: flex;
+            align-items: center;
+            width: 90%;
+            padding: 12px 15px;
+            color: #ced4da;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 4px;
+            margin: 8px 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .sidenav a .icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidenav a:hover {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+
+        /* Main content area styling */
+        .content {
+            margin-left: 270px; /* Adjust margin to match sidebar width */
+            padding: 40px;
+            flex-grow: 1;
+        }
+
+        .dashboard-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+        .dashboard-container h1 {
+            font-size: 26px;
+            color: #343a40;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .dashboard-container h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 12px;
+}
+
+        .dashboard-container p {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 25px;
+        }
+
+        /* Profile card styling */
+       .profile-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #6c757d;
+    margin: 0 auto 15px auto; /* Centers the avatar */
+}
+
+.profile-info h2 {
+    font-size: 18px;
+    color: #343a40;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.profile-info p {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+/* Notifications Section */
+.notifications {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 25px 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    transition: box-shadow 0.3s ease;
+}
+
+.notifications h2 {
+    font-size: 20px;
+    color: #343a40;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+}
+
+.notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    transition: background-color 0.3s;
+    position: relative;
+}
+
+.notification-item:hover {
+    background-color: #f0f0f0;
+}
+
+.notification-item p {
+    margin: 0;
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.notification-item small {
+    color: #999;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Red dot for unread */
+.notification-dot {
+    position: absolute;
+    top: 12px;
+    left: 10px;
+    width: 10px;
+    height: 10px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    display: none;
+}
+
+.notification-item.unread .notification-dot {
+    display: block;
+}
+
+/* Button Styles */
+.mark-read,
+.delete-notification {
+    background-color: transparent;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    margin-left: 10px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.mark-read {
+    color: #28a745;
+    border: 1px solid #28a745;
+}
+
+.mark-read:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.delete-notification {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.delete-notification:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+
+
+        /* Change profile button */
+        .change-profile-button {
+            margin-top: 0px;
+            padding: 10px 20px;
+            background-color: #343a40;
+            color: #f8f9fa;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .change-profile-button:hover {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+
+        /* Modal styles */
+       /* ============================= */
+/* 🎨 MODAL WRAPPER + OVERLAY   */
+/* ============================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-overlay.active {
+    display: flex;
+}
+
+/* ============================= */
+/* 📦 MODAL BOX                  */
+/* ============================= */
+.modal {
+    background-color: #fefefe;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    width: 95%;
+    max-width: 500px;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ============================= */
+/* ❌ CLOSE BUTTON               */
+/* ============================= */
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #e9ecef;
+    border: none;
+    color: #333;
+    font-size: 18px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.modal-close:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ============================= */
+/* 🧾 MODAL FORM                 */
+/* ============================= */
+.modal h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #343a40;
+    text-align: center;
+    font-weight: 700;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================= */
+/* 🏷️ LABELS & INPUTS           */
+/* ============================= */
+.modal label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 15px;
+}
+
+.modal input {
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: #f9f9f9;
+    color: #495057;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+}
+
+/* ============================= */
+/* ✅ SUBMIT BUTTON              */
+/* ============================= */
+.modal button[type="submit"] {
+    padding: 12px;
+    background-color: #28a745;
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+
+        .user-profile {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-profile .profile-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #f8f9fa;
+    margin: 0 auto 10px auto; /* Centers the avatar */
+}
+
+.user-profile h2 {
+    font-size: 18px;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.user-profile p {
+    font-size: 14px;
+    color: #ced4da;
+}
+.sidenav a:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+/* Specific hover effect for Logout link */
+.sidenav a.logout-link:hover {
+    background-color: #e74c3c;  /* Red color for hover */
+    color: #ffffff;  /* White text on hover */
+}
+.graph-section {
+    margin-top: 20px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.graph-section h2 {
+    margin-bottom: 15px;
+    color: #343a40;
+}
+canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.notif-icon {
+  font-size: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-icon {
+  color: #3498db;
+}
+
+.warning-icon {
+  color: #f39c12;
+}
+
+.alert-icon {
+  color: #e74c3c;
+}
+
+.notif-text {
+  flex-grow: 1;
+}
+
+.notification-item.unread {
+  background-color: #eef6ff; /* keep highlight if you want */
+  border-left: none;         /* remove the blue stripe */
+}
+
+/* POP UP CSS DITU */
+
+.live-notif-popup {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #007bff;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-weight: bold;
+  animation: slideUpFade 0.3s ease;
+}
+
+@keyframes slideUpFade {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+canvas#groupedPowerChart {
+  width: 100% !important;
+  height: 400px !important;
+}
+
+button {
+  padding: 10px 18px;
+  margin: 0 6px;
+  font-weight: bold;
+  border: 1px solid #007bff;
+  background-color: white;
+  color: #007bff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background-color: #007bff;
+  color: white;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #28a745;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+.see-more-btn {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #007bff;
+  text-decoration: none;
+  border: 1px solid #007bff;
+  padding: 8px 14px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.see-more-btn:hover {
+  background-color: #007bff;
+  color: white;
+}
+.dashboard-summary {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+.summary-box {
+  flex: 1;
+  min-width: 200px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%; /* ✅ added for full width */
+}
+.summary-box h2 {
+  font-size: 16px;
+  color: #555;
+}
+.summary-box p {
+  font-size: 26px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: darkcyan;
+}
+/* Granularity Dropdown */
+#granularitySelect {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #007bff;
+  border-radius: 6px;
+  background-color: white;
+  color: #007bff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#granularitySelect:hover {
+  background-color: darkcyan;
+  color: white;
+}
+
+#granularitySelect:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  background: transparent !important;  /* ✅ remove background */
+  border: none;                        /* ✅ remove border */
+  color: #343a40;                      /* icon color (adjust if needed) */
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: none !important;         /* clear any shadow */
+}
+.hamburger-btn i {
+  color: #343a40;
+}
+
+@media (max-width: 768px) {
+  .sidenav {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 250px;
+    height: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background-color: #343a40;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    padding: 30px 20px;
+  }
+
+  .sidenav.show {
+    left: 0;
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  body.nav-open {
+    overflow: hidden;
+  }
+  body.modal-open {
+  overflow: hidden;
+}
+}
+/* make the opener position-aware */
+.notif-opener {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  padding-right: 20px; /* room for the dot */
+  color: #343a40;      /* match your theme */
+}
+
+/* red dot when there are unread notifications */
+.notif-opener.has-unread::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #e74c3c;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+/* Base button look for the h2 opener */
+#notifOpener {
+  margin-top: 0px;
+            padding: 10px 20px;
+            background: transparent !important; 
+            color: #f8f9fa;
+            border: none;
+            box-shadow: none; 
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+}
+
+/* Hover/focus state */
+#notifOpener:hover,
+#notifOpener:focus {
+  background-color: white;
+  outline: none;
+}
+
+/* Disabled/read state (optional) */
+#notifOpener.no-unread {
+  background-color: #6c757d;
+  cursor: default;
+}
+
+/* Red badge when there are unread notifications */
+#notifOpener.has-unread::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  width: 10px;
+  height: 10px;
+  background-color: #e74c3c;
+ 
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+/* space between bell and text */
+#notifOpener .fa-bell {
+  font-size: 23px;
+  vertical-align: middle;
+  margin-right: 8px;
+  color: black;
+}
+
+/* optionally, bump up the entire h2 padding to give the bell room */
+#notifOpener {
+  padding-left: 12px;
+  padding-right: 11px; /* for the red dot */
+}
+
+#lastDataTimestamp.highlight {
+  transition: background 0.3s;
+  background: #d1f7d1;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.live-chart-container {
+  margin-top: 30px;
+  margin-bottom: 40px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.live-chart-container h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+button[disabled] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.date-filter-section {
+  margin-bottom: 20px;
+}
+.date-filter-buttons button {
+  margin: 0 5px;
+}
+.date-filter-buttons button {
+  background-color: white;
+  border: 2px solid #007bff;
+  color: #007bff;
+  padding: 8px 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.date-filter-buttons button:hover {
+  background-color: #007bff;
+  color: white;
+}
+.highlight {
+  background-color: #ffffcc;
+  transition: background-color 0.5s ease;
+}
+/* Notification Dropdown Panel */
+.notifications-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  width: 90vw;            /* Fluid width */
+  max-width: 360px;       /* Safe max for desktop */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 999;
+  overflow-y: auto;
+  display: none;
+  font-size: 14px;
+  box-sizing: border-box; /* Important to prevent overflow */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+
+}
+
+/* Mobile-specific fix */
+@media (max-width: 500px) {
+  .notifications-dropdown {
+    position: fixed !important;
+    top: 70px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    z-index: 1003;
+  }
+}
+@media (max-width: 375px) {
+  .notifications-dropdown {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+@media (max-width: 400px) {
+  .notifications-dropdown {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: 90%;
+    max-width: 320px;
+  }
+}
+
+.notifications-dropdown.show {
+  display: block;
+  animation: fadeIn 0.3s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notifications-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  background-color: #fdfdfd;
+  font-weight: bold;
+  border-radius: 10px 10px 0 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Notification Item */
+.notifications-dropdown .notification-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f1f1;
+  position: relative;
+  background-color: #fff;
+  transition: background 0.2s;
+}
+
+.notifications-dropdown .notification-item:hover {
+  background-color: #f9f9f9;
+}
+
+.notifications-dropdown .notification-item.unread {
+  background-color: #eef6ff;
+   border-left: none;   
+}
+
+.notifications-dropdown .notif-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.notifications-dropdown .notif-text {
+  flex: 1;
+}
+
+.notifications-dropdown .notif-text p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.notifications-dropdown .notif-text small {
+  display: block;
+  margin-top: 4px;
+  color: #888;
+}
+
+/* Buttons */
+.notifications-dropdown .mark-read,
+.notifications-dropdown .delete-notification {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 4px;
+  border: 1px solid;
+  background-color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.notifications-dropdown .mark-read {
+  color: #28a745;
+  border-color: #28a745;
+}
+.notifications-dropdown .mark-read:hover {
+  background-color: #28a745;
+  color: white;
+}
+
+.notifications-dropdown .delete-notification {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+.notifications-dropdown .delete-notification:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Red dot */
+.notifications-dropdown .notification-dot {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  width: 10px;
+  height: 10px;
+  background-color: #e74c3c;
+  border-radius: 50%;
+}
+
+/* Empty State */
+.no-notifications {
+  padding: 15px;
+  text-align: center;
+  color: #999;
+}
+.content {
+  padding: 40px;
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+}
+
+/* Keep the margin for desktop only */
+@media (min-width: 769px) {
+  .content {
+    margin-left: 270px;
+  }
+}
+
+/* No margin on mobile */
+@media (max-width: 768px) {
+  .content {
+    width: 100%;
+    margin-left: 0;
+  }
+  .notifications-dropdown {
+    position: fixed !important;
+    top: 70px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: 90% !important;
+    max-width: 95vw !important;
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+    z-index: 9999 !important;
+    display: block;
+    border-radius: 12px;
+  }
+
+  .notifications-dropdown .notification-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .notifications-dropdown .mark-read,
+  .notifications-dropdown .delete-notification {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .notifications-dropdown .notifications-header {
+    text-align: center;
+    font-size: 18px;
+  }
+
+  #notifOpener {
+    position: relative;
+    z-index: 10000;
+  }
+}
+@media (max-width: 768px) {
+  .dashboard-summary {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .dashboard-container,
+  .section-box,
+  .summary-box {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .date-filter-section input,
+  .date-filter-section button,
+  #granularitySelect {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .date-filter-section label {
+  display: block;
+  text-align: left;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+  canvas#groupedPowerChart,
+  canvas#livePowerChart {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .dashboard-container {
+    padding: 15px;
+  }
+
+  .graph-section,
+  .live-chart-container {
+    padding: 10px;
+  }
+
+  table#reportTable th,
+  table#reportTable td {
+    font-size: 14px;
+    padding: 6px;
+  }
+}
+
+.chart-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.timestamp-group small:hover {
+  text-decoration: underline;
+  cursor: help;
+}
+/* Base style */
+#notificationsDropdown {
+  position: absolute;
+  top: 40px;
+  right: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+  z-index: 9999;
+}
+
+/* Visible state */
+#notificationsDropdown.show {
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #notificationsDropdown {
+    right: 10px;
+    width: 90vw;
+    top: 95px !important;
+  }
+
+  .notification-item {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .notification-item i {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-section {
+    padding: 15px;
+    margin-bottom: 25px;
+    box-shadow: none;
+    border-radius: 0;
+    background-color: #ffffff;
+  }
+
+  .dashboard-section h2 {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  .form-group input[type="date"],
+  .form-group select,
+  .form-group button {
+    width: 100%;
+    font-size: 15px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+
+  #reportTable {
+    font-size: 14px;
+    width: 100%;
+    min-width: 600px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chart-container,
+  .live-chart-container {
+    width: 100%;
+    overflow-x: auto;
+    padding: 10px;
+  }
+
+  .download-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .download-buttons button {
+    width: 100%;
+  }
+}
+.table-scroll {
+  overflow-x: auto;
+  width: 100%;
+  border-radius: 6px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+}
+
+#reportTable {
+  width: 100%;
+  min-width: 600px;
+  background-color: #fff;
+}
+
+#reportTable th,
+#reportTable td {
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.download-buttons {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .date-filter-section label,
+  .date-filter-section input[type="date"],
+  .download-buttons button {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .download-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #reportTable {
+    font-size: 13px;
+  }
+}
+
+
+    </style>
+</head>
+<body>
+    <div id="liveNotifPopup" class="live-notif-popup" style="display:none;">
+  <p id="liveNotifText">🔔 New notification!</p>
+</div>
+    <!-- Sidebar -->
+    <div class="sidenav">
+        <div class="user-profile">
+    <div class="profile-avatar">
+        {% if usser.profile.profile_picture %}
+  <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture"
+       style="width: 70px; height: 70px; border-radius: 50%;">
+{% else %}
+  <i class="fas fa-user"></i>
+{% endif %}
+    </div>
+    <h2>{{ user.get_full_name }}</h2>
+    <p style="font-size: 14px; color: #ced4da;">{{ user.email }}</p>
+</div>
+        <a href="{% url 'user_dashboard' %}"><i class="fas fa-tachometer-alt icon"></i> Dashboard</a>
+        <a href="{% url 'update_account' %}"><i class="fas fa-user icon"></i> Update Account</a>
+        <a href="{% url 'energy_monitoring' %}"><i class="fas fa-bolt icon"></i> Energy Monitoring</a>
+        <a href="{% url 'user_faq' %}"><i class="fas fa-question-circle icon"></i> FAQ</a>
+      <a href="{% url 'logout' %}" class="logout-link" onclick="return confirmLogout()">
+    <i class="fas fa-sign-out-alt icon"></i> Logout
+</a>
+    </div>
+    
+    <button id="hamburgerToggle" class="hamburger-btn">
+  <i class="fas fa-bars"></i>
+</button>
+
+    <div class="content">
+      <div class="dashboard-container">
+    <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h1 style="font-size: 22px;">Welcome, {{ user.first_name }}!</h1>
+  <div style="display: flex; gap: 10px;">
+     <!-- 📦 Notification Wrapper -->
+<div id="notifWrapper" style="position: relative; display: inline-block;">
+  <h2 id="notifOpener" class="notif-opener {% if unread_count > 0 %}has-unread{% endif %}">
+  <i class="fas fa-bell"></i>
+</h2>
+  <!-- 🔔 Notifications Dropdown -->
+  <div id="notificationsDropdown" class="notifications-dropdown">
+    <div class="notifications-header">
+      <h3> Notifications</h3>
+    </div>
+    <ul class="dropdown-list">
+      {% for notification in notifications %}
+        <li id="notification-{{ notification.id }}" class="notification-item {% if not notification.is_read %}unread{% endif %} {{ notification.tag }}">
+          <div class="notification-dot"></div>
+          <div class="notif-icon">
+            {% if notification.tag == 'info' %}
+              <i class="fas fa-info-circle info-icon"></i>
+            {% elif notification.tag == 'warning' %}
+              <i class="fas fa-exclamation-triangle warning-icon"></i>
+            {% elif notification.tag == 'alert' %}
+              <i class="fas fa-exclamation-circle alert-icon"></i>
+            {% else %}
+              <i class="fas fa-bell"></i>
+            {% endif %}
+          </div>
+          <div class="notif-text">
+            <p>{{ notification.message|escape }}<br>
+              <small>{{ notification.created_at|date:"M d, Y H:i" }}</small>
+            </p>
+          </div>
+          {% if not notification.is_read %}
+            <button class="mark-read" type="button" data-id="{{ notification.id }}" onclick="event.stopPropagation(); markAsRead({{ notification.id }});">Mark as Read</button>
+          {% endif %}
+          <button class="delete-notification" type="button" data-id="{{ notification.id }}" onclick="event.stopPropagation(); deleteNotification({{ notification.id }});">🗑️</button>
+        </li>
+      {% empty %}
+        <li class="no-notifications">No notifications available.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+    
+  </div>
+</div>
+
+<div class="dashboard-summary">
+  <div class="summary-box">
+    <h2>🔌 Today</h2>
+   <p id="totalPowerToday">{{ total_power_today }} <small>kWh</small></p>
+  </div>
+
+  <div class="summary-box">
+    <h2>📅 This Week</h2>
+   <p id="totalPowerWeek">{{ total_power_week }} <small>kWh</small></p>
+  </div>
+
+  <div class="summary-box">
+    <h2>📆 This Month</h2>
+   <p id="totalPowerMonth">{{ total_power_month }} <small>kWh</small></p>
+  </div>
+
+  
+</div>
+<div style="text-align:center; margin-top: 20px;">
+  <button onclick="showLastDataTimestamp()">📍 Check Last Data Timestamp</button>
+</div>
+<div class="summary-box">
+  <div class="timestamp-info mt-3 mb-2">
+  <strong>Last Data Timestamp:</strong>
+  <span id="lastDataTimestamp" style="font-weight: bold;">Loading...</span>
+</div>
+</div>
+<div class="timestamp-group mt-3 mb-2">
+  <p><strong>Today:</strong> <span id="ts-today">Loading...</span></p>
+  <p><strong>This Week:</strong> <span id="ts-week">Loading...</span></p>
+  <p><strong>This Month:</strong> <span id="ts-month">Loading...</span></p>
+</div>
+
+<div class="section-box">
+<h2><i class="fas fa-chart-bar"></i> Power Data Overview</h2>
+<div style="text-align:center; margin: 20px 0;">
+  <label for="granularitySelect" style="font-weight: bold; margin-right: 10px;">View By:</label>
+  <select id="granularitySelect" onchange="loadChartData(this.value)">
+  <option value="hour">Hourly</option>
+<option value="week">Weekly</option>
+<option value="month">Monthly</option>
+</select>
+</div>
+</div>
+
+
+<div class="date-filter-section" style="text-align: center;">
+  <label for="startDate">Start Date:</label>
+  <input type="date" id="startDate">
+  <label for="endDate">End Date:</label>
+  <input type="date" id="endDate">
+  <button onclick="applyDateFilter()">Apply Filter</button>
+
+  
+</div>
+
+
+
+<div id="groupedChartLoader" class="loader">Loading...</div>
+
+<div class="chart-wrapper">
+  <canvas id="groupedPowerChart"></canvas>
+</div>
+
+<!-- Power Usage Report Section -->
+<div class="section-box" style="margin-top: 40px;">
+  <h2><i class="fas fa-file-alt"></i> Power Usage Report</h2>
+
+  <!-- Date Filters -->
+  <div class="date-filter-section">
+    <label for="reportStart">Start:</label>
+    <input type="date" id="reportStart">
+
+    <label for="reportEnd">End:</label>
+    <input type="date" id="reportEnd">
+
+    <!-- Buttons -->
+    <div class="download-buttons">
+      <button onclick="generateReport()">Generate</button>
+      <button onclick="exportPDF()" id="pdfButton">Download PDF</button>
+      <span id="pdfSpinner" style="display: none; margin-left: 8px;">⏳ Generating...</span>
+    </div>
+  </div>
+
+  <!-- Table Wrapper -->
+  <div class="table-scroll">
+    <table id="reportTable" border="1" style="border-collapse: collapse;">
+      <thead>
+        <tr style="background-color: darkcyan; color: white;">
+          <th style="padding: 10px;">Date</th>
+          <th style="padding: 10px;">Power 1 (kWh)</th>
+          <th style="padding: 10px;">Power 2 (kWh)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be filled via JavaScript -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+<div class="live-chart-container">
+  <h2>Live Power Chart</h2>
+  <canvas id="livePowerChart" style="width:100%; height:300px;"></canvas>
+  <a href="{% url 'energy_monitoring' %}" class="see-more-btn">See More →</a>
+</div>
+</div>
+</div>
+
+<script>
+let ws;
+let livePowerChart;
+let groupedChart = null;
+let allowLiveUpdates = true;
+let debounceTimer;
+
+const loader = document.getElementById("groupedChartLoader");
+loader.style.display = "block";
+// ...
+loader.style.display = "none";
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Init live chart
+  initLiveChart();
+
+  // 2. Load default grouped chart
+  loadChartData("hour");
+
+  // 4. Start WebSocket
+  setupWebSocket();
+
+  // 5. Start real-time timestamp updater
+  fetchAndUpdateLastTimestamp();
+  setInterval(fetchAndUpdateLastTimestamp, 2 * 60 * 1000);
+
+  // 6. Notifications setup 
+  setInterval(fetchNewNotifications, 10000); // every 10s
+});
+
+// ================== LIVE CHART =====================
+function initLiveChart() {
+  const ctx = document.getElementById("livePowerChart").getContext("2d");
+  livePowerChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "Power 1 (W)",
+          data: [],
+          borderColor: "#ff6384",
+          backgroundColor: "rgba(255,99,132,0.2)",
+          tension: 0.3,
+          fill: true
+        },
+        {
+          label: "Power 2 (W)",
+          data: [],
+          borderColor: "#36a2eb",
+          backgroundColor: "rgba(54,162,235,0.2)",
+          tension: 0.3,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          title: { display: true, text: "Time" }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "Watts (W)" }
+        }
+      }
+    }
+  });
+}
+function updateLiveChart(power1, power2, label) {
+  if (!livePowerChart) return;
+
+  livePowerChart.data.labels.push(label);
+  livePowerChart.data.datasets[0].data.push(power1);
+  livePowerChart.data.datasets[1].data.push(power2);
+
+  if (livePowerChart.data.labels.length > 20) {
+    livePowerChart.data.labels.shift();
+    livePowerChart.data.datasets[0].data.shift();
+    livePowerChart.data.datasets[1].data.shift();
+  }
+
+  livePowerChart.update();
+}
+
+
+function setupWebSocket() {
+  ws = new WebSocket("ws://solar.local:81");
+
+ ws.onopen = () => {
+  console.log("WebSocket connected – loading 7 days of history…");
+
+  fetch("/api/historical-power/?t=" + new Date().getTime())
+    .then(res => {
+      if (!res.ok) throw new Error(res.status);
+      return res.json();
+    })
+    .then(json => {
+      if (json && json.timestamps?.length > 0) {
+        livePowerChart.data.labels = json.timestamps;
+        livePowerChart.data.datasets[0].data = json.power1;
+        livePowerChart.data.datasets[1].data = json.power2;
+        livePowerChart.update();
+
+        // only start receiving live data after successful load
+      // This assignment is already declared later — so just DELETE this line entirely
+      } else {
+        throw new Error("No historical data");
+      }
+    })
+    .catch(err => {
+      console.error("History load failed. WebSocket not initialized:", err);
+     
+    });
+};
+
+  ws.onerror = err => console.error("WebSocket error:", err);
+
+  ws.onclose = () => {
+    console.warn("🔌 WebSocket closed. Attempting reconnection…");
+    // Optionally, implement a reconnection attempt here without reloading
+    setTimeout(() => setupWebSocket(), 5000);
+};
+
+  ws.onmessage = (event) => {
+    const msg = event.data;
+
+    if (!msg.startsWith("B:")) return;
+
+    const data = msg.split(",");
+    if (data.length < 9) return;
+
+    const power1 = parseFloat(data[5].substring(3));
+    const power2 = parseFloat(data[6].substring(3));
+    const totalPowerToday = parseFloat(data[7].substring(4)); // "TPT:"
+    const connectedDevices = parseInt(data[8].substring(3));  // "CD:"
+    const timestamp = new Date().toLocaleTimeString();
+
+    if (allowLiveUpdates) {
+    updateLiveChart(power1, power2, timestamp);
+    updateGroupedChart(power1, power2, timestamp);
+
+    document.getElementById("totalPowerToday").textContent = `${totalPowerToday.toFixed(2)} kWh`;
+
+  // NEW: persist reading to backend
+  fetch("/api/save-reading/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ power1, power2 })
+  }).catch(err => console.warn("❌ Save failed:", err));
+
+// Get true Week/Month totals from server
+fetch("/api/live-energy-totals/")
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("totalPowerWeek").textContent = `${data.week.toFixed(2)} kWh`;
+    document.getElementById("totalPowerMonth").textContent = `${data.month.toFixed(2)} kWh`;
+  })
+  .catch(err => console.error("Failed to fetch week/month:", err));
+    }
+  };
+}
+
+// ================== GROUPED CHART =====================
+function loadChartData(range) {
+  const loader = document.getElementById("groupedChartLoader");
+  loader.style.display = "block";
+  
+  const acceptedRanges = ["hour", "day", "week", "month"];
+  const normalizedRange = acceptedRanges.includes(range) ? range : "hour";
+
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
+
+  let url = `/api/grouped-power-data/?range=${normalizedRange}`;
+  if (start && end) {
+    url += `&start=${start}&end=${end}`;
+  }
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      loader.style.display = "none";
+
+      const ctx = document.getElementById("groupedPowerChart").getContext("2d");
+      if (window.groupedChart) {
+        window.groupedChart.destroy();
+      }
+
+      const labelMap = {
+        hour: "Hour",
+        day: "Day",
+        week: "Week",
+        month: "Month"
+      };
+
+      const labelSuffix = labelMap[normalizedRange] || "Hour";
+
+      const datasets = [
+        {
+          label: `Power 1 (${labelSuffix})`,
+          data: data.power1 || [],
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          borderColor: "rgba(255, 99, 132, 1)",
+          borderWidth: 1
+        },
+        {
+          label: `Power 2 (${labelSuffix})`,
+          data: data.power2 || [],
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 1
+        }
+      ];
+
+      window.groupedChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: data.labels || [],
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "top"
+            }
+          },
+          scales: {
+            x: {
+              type: "category",
+              title: {
+                display: true,
+                text: "Time"
+              },
+              ticks: {
+                autoSkip: false
+              }
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Watts (W)"
+              }
+            }
+          }
+        }
+      });
+    })
+    .catch(error => {
+      loader.style.display = "none";
+      console.error("Grouped Chart Error:", error);
+    });
+}
+
+fetch("/api/live-energy-totals/")
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("totalPowerToday").textContent = `${data.today.toFixed(2)} kWh`;
+    document.getElementById("totalPowerWeek").textContent = `${data.week.toFixed(2)} kWh`;
+    document.getElementById("totalPowerMonth").textContent = `${data.month.toFixed(2)} kWh`;
+  })
+  .catch(err => console.error("Error fetching live totals:", err));
+
+// ================== NOTIFICATIONS =====================
+
+
+
+function fetchNewNotifications() {
+  fetch("/check_new_notifications/")
+    .then(res => res.json())
+    .then(data => {
+      console.log("🔍 New Notif Check:", data);
+
+      if (data.has_new) {
+        const popup = document.getElementById("liveNotifPopup");
+        const notifText = document.getElementById("liveNotifText");
+        notifText.textContent = `🔔 ${data.message}`;
+        popup.style.display = "block";
+
+        setTimeout(() => popup.style.display = "none", 5000);
+      }
+    })
+    .catch(err => console.error("⚠️ Popup fetch error:", err));
+}
+
+// ================== LOGOUT CONFIRM =====================
+function confirmLogout() {
+  return confirm("Are you sure you want to log out?");
+}
+
+document.addEventListener("click", function (e) {
+  const markBtn = e.target.closest(".mark-read");
+  const delBtn = e.target.closest(".delete-notification");
+
+  // Mark as Read
+  if (markBtn) {
+    const id = markBtn.getAttribute("data-id");
+    fetch(`/mark_notification_read/${id}/`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const notifItem = document.getElementById(`notification-${id}`);
+          if (notifItem) notifItem.classList.remove("unread");
+
+          const dot = notifItem.querySelector(".notification-dot");
+          if (dot) dot.style.display = "none";
+
+          markBtn.remove(); // Remove the button
+        }
+      })
+      .catch(err => console.error("❌ Mark-as-read failed:", err));
+  }
+
+  // Delete Notification
+  if (delBtn) {
+    const id = delBtn.getAttribute("data-id");
+    if (confirm("Delete this notification?")) {
+      fetch(`/delete_notification/${id}/`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const notifItem = document.getElementById(`notification-${id}`);
+            if (notifItem) notifItem.remove();
+          }
+        })
+        .catch(err => console.error("❌ Delete failed:", err));
+    }
+  }
+});
+
+
+function openModal() {
+  const modal = document.getElementById("modalOverlay");
+  modal.classList.add("active");
+}
+
+function closeModal() {
+  const modal = document.getElementById("modalOverlay");
+  modal.classList.remove("active");
+}
+
+function openWidgetModal() {
+  document.getElementById("widgetModalOverlay").classList.add("active");
+}
+function closeWidgetModal() {
+  document.getElementById("widgetModalOverlay").classList.remove("active");
+}
+
+// Register event after DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  const bell = document.getElementById("notifOpener");
+  const dropdown = document.getElementById("notificationsDropdown");
+
+  function closeDropdown() {
+    dropdown.classList.remove("show");
+  }
+
+  function toggleDropdown() {
+    dropdown.classList.toggle("show");
+  }
+
+  // Toggle on bell click
+  bell.addEventListener("click", function (e) {
+    e.stopPropagation();
+    toggleDropdown();
+  });
+
+  // Click outside closes it
+  document.addEventListener("click", function (event) {
+    if (!dropdown.contains(event.target) && !bell.contains(event.target)) {
+      closeDropdown();
+    }
+  });
+
+  // ESC key closes
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeDropdown();
+    }
+  });
+
+  // Touchstart for mobile tap outside
+  document.addEventListener("touchstart", function (event) {
+    if (!dropdown.contains(event.target) && !bell.contains(event.target)) {
+      closeDropdown();
+    }
+  });
+});
+
+
+
+function closeNotificationsModal() {
+  document
+    .getElementById("notificationsModalOverlay")
+    .classList
+    .remove("active");
+}
+function closeNotificationsDropdown() {
+  const dropdown = document.getElementById("notificationsDropdown");
+  dropdown.classList.remove("show");
+}
+
+function updateGroupedChart(power1, power2, label) {
+  if (!groupedChart || !groupedChart.data || !groupedChart.data.datasets[0]) return;
+
+  groupedChart.data.labels.push(label);
+  groupedChart.data.datasets[0].data.push(power1);
+  groupedChart.data.datasets[1].data.push(power2);
+
+  if (groupedChart.data.labels.length > 30) {
+    groupedChart.data.labels.shift();
+    groupedChart.data.datasets[0].data.shift();
+    groupedChart.data.datasets[1].data.shift();
+  }
+
+  groupedChart.update();
+}
+function fetchAndUpdateLastTimestamp() {
+    fetch("/api/historical-power/?t=" + new Date().getTime())
+      .then(res => res.json())
+      .then(data => {
+        const el = document.getElementById("lastDataTimestamp");
+
+        if (data.timestamps && data.timestamps.length > 0) {
+          let rawTS = data.timestamps[data.timestamps.length - 1];  // get most recent
+
+          // Try parsing as ISO; fallback to showing raw
+          let ts = new Date(rawTS);
+          if (isNaN(ts)) {
+            el.textContent = rawTS;
+            el.style.color = "gray";
+            return;
+          }
+
+          const now = new Date();
+          const diffMinutes = Math.round((now - ts) / 1000 / 60);
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+          el.textContent = `${ts.toLocaleString()} (${tz})`;
+
+          if (diffMinutes > 2) {
+            el.style.color = "red";
+            el.title = `⚠️ ${diffMinutes} minutes old`;
+          } else {
+            el.style.color = "green";
+            el.title = `✅ Updated ${diffMinutes} min ago`;
+          }
+        } else {
+          el.textContent = "No data yet";
+          el.style.color = "gray";
+        }
+      })
+      .catch(err => {
+        console.error("Timestamp fetch error:", err);
+        const el = document.getElementById("lastDataTimestamp");
+        el.textContent = "⚠️ Error fetching timestamp";
+        el.style.color = "gray";
+      });
+  }
+
+
+function showLastDataTimestamp() {
+    fetchAndUpdateLastTimestamp();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchAndUpdateLastTimestamp();
+    setInterval(fetchAndUpdateLastTimestamp, 2 * 60 * 1000);
+  });
+
+
+function generateReport() {
+  const start = document.getElementById("reportStart").value;
+  const end = document.getElementById("reportEnd").value;
+  if (!start || !end) return alert("Please select both dates.");
+
+  fetch(`/api/report/?start=${start}&end=${end}`)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#reportTable tbody");
+      tbody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="padding: 8px; text-align: center;">${new Date(row.day).toLocaleDateString()}</td>
+          <td style="padding: 8px; text-align: center;">${(row.total_power1 || 0).toFixed(2)}</td>
+          <td style="padding: 8px; text-align: center;">${(row.total_power2 || 0).toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      console.error("Report error:", err);
+      alert("Failed to load report.");
+    });
+}
+
+function exportPDF() {
+  const start = document.getElementById("reportStart").value;
+  const end = document.getElementById("reportEnd").value;
+  const btn = document.getElementById("pdfButton");
+  const spinner = document.getElementById("pdfSpinner");
+
+  if (!start || !end) {
+    alert("Please select both dates first.");
+    return;
+  }
+
+  btn.disabled = true;
+  spinner.style.display = "inline";
+
+  // Open PDF in new tab
+  const url = `/api/report/pdf/?start=${start}&end=${end}`;
+  const win = window.open(url, "_blank");
+
+  // Re-enable button after delay
+  setTimeout(() => {
+    btn.disabled = false;
+    spinner.style.display = "none";
+  }, 4000); // Approx. render time, adjust if needed
+}
+
+function setRange(preset) {
+  const startInput = document.getElementById("startDate");
+  const endInput = document.getElementById("endDate");
+
+  const today = new Date();
+  let startDate = new Date();
+
+  if (preset === "week") {
+    startDate.setDate(today.getDate() - 7);
+  } else if (preset === "month") {
+    startDate.setMonth(today.getMonth() - 3); // ✅ At least 3 months back
+  }
+
+  const format = (d) => d.toISOString().split("T")[0];
+  startInput.value = format(startDate);
+  endInput.value = format(today);
+
+  applyDateFilter();
+}
+
+function showToast(msg) {
+  const toast = document.createElement("div");
+  toast.className = "live-notif-popup";
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+ function markAsRead(id) {
+    fetch(`/mark_notification_read/${id}/`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const notifItem = document.getElementById(`notification-${id}`);
+          if (notifItem) {
+            notifItem.classList.remove("unread");
+            const dot = notifItem.querySelector(".notification-dot");
+            if (dot) dot.style.display = "none";
+
+            const btn = notifItem.querySelector(".mark-read");
+            if (btn) btn.remove();
+
+            showToast("Notification marked as read ✅");
+          }
+        }
+      })
+      .catch(err => {
+        console.error("❌ Failed to mark as read:", err);
+        showToast("Failed to mark as read ❌");
+      });
+  }
+
+  function deleteNotification(id) {
+    if (!confirm("Are you sure you want to delete this notification?")) return;
+
+    fetch(`/delete_notification/${id}/`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const notifItem = document.getElementById(`notification-${id}`);
+          if (notifItem) notifItem.remove();
+
+          showToast("Notification deleted 🗑️");
+        }
+      })
+      .catch(err => {
+        console.error("❌ Failed to delete:", err);
+        showToast("Failed to delete notification ❌");
+      });
+  }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const wsUrl = "ws://solar.local:81";
+    let ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+        console.log("✅ WebSocket connected");
+        ws.send("web:init");
+    };
+
+    ws.onerror = err => {
+        console.error("❌ WebSocket error:", err);
+    };
+
+    ws.onclose = () => {
+  console.warn("🔌 WebSocket closed. Reconnecting in 5s...");
+  setTimeout(setupWebSocket, 5000); // retry socket, not page
+};
+
+    ws.onmessage = (event) => {
+        const data = event.data;
+
+        if (!data.startsWith("B:")) return; // Skip non-relevant messages
+
+        const parts = data.split(",");
+        if (parts.length < 9) return;
+
+        try {
+            const battery = parseFloat(parts[0].substring(2));
+            const power1 = parseFloat(parts[5].substring(3));
+            const power2 = parseFloat(parts[6].substring(3));
+            const energy1 = parseFloat(parts[7].substring(3));
+            const energy2 = parseFloat(parts[8].substring(3));
+
+            const totalToday = power1 + power2;
+            const week = "Loading...";
+            const month = "Loading...";
+
+            // Inject into the DOM if you have matching HTML IDs:
+            document.getElementById("totalPowerToday").innerText = `${totalToday.toFixed(2)} kWh`;
+            document.getElementById("power1Value").innerText = `${power1.toFixed(2)} W`;
+            document.getElementById("power2Value").innerText = `${power2.toFixed(2)} W`;
+            document.getElementById("batteryVoltage").innerText = `${battery.toFixed(2)} V`;
+
+            const powerTodayEl = document.getElementById("totalPowerToday");
+            if (powerTodayEl) {
+            powerTodayEl.innerText = `${totalToday.toFixed(2)} kWh`;
+            }
+
+            // Battery logic coloring
+            const batteryBox = document.querySelector('.battery-box');
+            if (battery < 11) {
+                batteryBox.style.backgroundColor = "#f8d7da";
+                batteryBox.style.color = "#721c24";
+            } else if (battery > 12.5) {
+                batteryBox.style.backgroundColor = "#d4edda";
+                batteryBox.style.color = "#155724";
+            } else {
+                batteryBox.style.backgroundColor = "#fff3cd";
+                batteryBox.style.color = "#856404";
+            }
+
+        } catch (e) {
+            console.error("⚠️ Error parsing WebSocket data:", e);
+        }
+    };
+});
+
+showToast("📊 Updating chart data...");
+
+
+function applyDateFilter() {
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
+  const range = document.getElementById("granularitySelect").value;
+
+  if (!start || !end) {
+    alert("Please select both a start and end date.");
+    return;
+  }
+
+  const url = `/api/grouped-power-data/?range=${range}&start=${start}&end=${end}`;
+  document.getElementById("groupedChartLoader").style.display = "block";
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("groupedChartLoader").style.display = "none";
+      updateGroupedChartWithNewData(data.labels, data.power1, data.power2);
+    })
+    .catch(err => {
+      console.error("❌ Error fetching filtered data:", err);
+      alert("⚠️ Failed to load filtered data. Please try again.");
+      document.getElementById("groupedChartLoader").style.display = "none";
+    });
+}
+
+
+function updateGroupedChartWithNewData(labels, power1, power2) {
+  if (!groupedChart || !groupedChart.data) {
+    console.warn("⚠️ Chart not initialized yet.");
+    return;
+  }
+
+  groupedChart.data.labels = labels;
+  
+  // Guard against missing datasets
+  if (groupedChart.data.datasets.length < 2) {
+    groupedChart.data.datasets.push({
+      label: "Power 2",
+      data: [],
+      backgroundColor: "rgba(54, 162, 235, 0.2)",
+      borderColor: "rgba(54, 162, 235, 1)",
+      borderWidth: 1
+    });
+  }
+
+  groupedChart.data.datasets[0].data = power1 || [];
+  groupedChart.data.datasets[1].data = power2 || [];
+
+  groupedChart.update();
+}
+
+
+document.getElementById("granularitySelect").addEventListener("change", function () {
+  const today = new Date();
+  const start = new Date();
+
+  if (this.value === "month") {
+    start.setMonth(today.getMonth() - 3);
+  } else if (this.value === "week") {
+    start.setDate(today.getDate() - 7);
+  } else {
+    start.setDate(today.getDate() - 1);
+  }
+
+  document.getElementById("startDate").value = start.toISOString().split("T")[0];
+  document.getElementById("endDate").value = today.toISOString().split("T")[0];
+
+  loadChartData(this.value);
+});
+
+function debouncedLoadChartData(range) {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => loadChartData(range), 300);
+}
+
+ const hamburgerBtn = document.getElementById("hamburgerToggle");
+  const sidebar = document.querySelector(".sidenav");
+  const body = document.body;
+
+  hamburgerBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("show");
+    body.classList.toggle("nav-open");
+  });
+
+  // Close on outside click
+  document.addEventListener("click", function (e) {
+    if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+      sidebar.classList.remove("show");
+      body.classList.remove("nav-open");
+    }
+  });
+
+  function fetchSummaryTimestamps() {
+  fetch("/api/summary-timestamps/")
+    .then(res => res.json())
+    .then(data => {
+      updateTS("ts-today", data.today);
+      updateTS("ts-week", data.week);
+      updateTS("ts-month", data.month);
+    })
+    .catch(err => {
+      console.error("Summary TS fetch failed", err);
+    });
+}
+
+function updateTS(id, ts) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (!ts) {
+    el.textContent = "No data";
+    el.style.color = "gray";
+    return;
+  }
+
+  const dt = new Date(ts);
+  el.textContent = dt.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  const now = new Date();
+  const diffMinutes = Math.round((now - dt) / 1000 / 60);
+  el.style.color = diffMinutes > 5 ? "red" : "green";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetchSummaryTimestamps();
+  setInterval(fetchSummaryTimestamps, 120000);  // refresh every 2 mins
+});
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    document.getElementById("notificationsDropdown").classList.remove("show");
+  }
+});
+
+function loadHistoricalData() {
+  fetch('/api/historical-power/')
+    .then(response => response.json())
+    .then(data => {
+      myChart.data.labels = data.timestamps;
+      myChart.data.datasets[0].data = data.power1;
+      myChart.data.datasets[1].data = data.power2;
+      myChart.update();
+    });
+}
+
+setInterval(loadHistoricalData, 5000); // every 5 seconds
+
+
+</script>
+
+</body>
+</html>

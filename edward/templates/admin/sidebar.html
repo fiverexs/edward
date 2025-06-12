@@ -1,0 +1,120 @@
+<!-- templates/admin/sidebar.html -->
+<div class="sidenav" id="sidebar">
+  <div style="text-align:center; padding: 0 59px; margin-bottom: 60px; font-weight:bold; color:#bdc3c7;">
+    NAVIGATION
+  </div>
+
+  <a href="{% url 'admin_dashboard' %}"><i class="fas fa-home icon"></i><span>Dashboard</span></a>
+  <a href="{% url 'user_management' %}"><i class="fas fa-users icon"></i><span>User Management</span></a>
+  <a href="{% url 'contact_submissions_page' %}"><i class="fas fa-envelope icon"></i><span>Manage Contacts</span></a>
+  <a href="{% url 'pending_work_list' %}"><i class="fas fa-tasks icon"></i><span>Pending Work</span></a>
+  <a href="{% url 'site_statistics' %}"><i class="fas fa-chart-bar icon"></i><span>Site Statistics</span></a>
+  <a href="{% url 'website_configuration' %}"><i class="fas fa-cogs icon"></i><span>Website Configuration</span></a>
+  <a href="{% url 'archived_contacts' %}"><i class="fas fa-archive icon"></i><span>Archived Contacts</span></a>
+</div>
+<style>
+  @media (max-width: 768px) {
+  .main {
+    margin-left: 0 !important;
+    padding: 80px 10px 20px !important;
+  }
+
+  .topbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    height: auto;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dashboard-title {
+    font-size: 16px;
+  }
+
+  .topbar-right {
+    gap: 8px;
+    align-items: center;
+  }
+
+
+  .hamburger {
+    top: 12px;
+    left: 12px;
+  }
+
+  .sidenav {
+    left: -100%;
+    transition: left 0.3s ease-in-out;
+  }
+
+  .sidenav.active {
+    left: 0;
+  }
+    }
+  @media (max-width: 768px) {
+  .sidenav {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 230px;
+    height: 100%;
+    z-index: 1001;
+  }
+
+  .sidenav.active {
+    transform: translateX(0);
+  }
+
+  .main {
+    margin-left: 0 !important;
+    padding: 80px 10px 20px !important;
+  }
+
+  body.nav-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+}
+</style>
+
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("main-content");
+
+  if (window.innerWidth <= 768) {
+    // Mobile behavior: slide in/out
+    sidebar.classList.toggle("active");
+    document.body.classList.toggle("nav-open");
+  } else {
+    // Desktop behavior: collapse sidebar
+    sidebar.classList.toggle("collapsed");
+    main.classList.toggle("collapsed");
+    localStorage.setItem("sidebar-collapsed", sidebar.classList.contains("collapsed"));
+  }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("main-content");
+  const isCollapsed = localStorage.getItem("sidebar-collapsed") === "true";
+
+  if (isCollapsed) {
+    sidebar.classList.add("collapsed");
+    main.classList.add("collapsed");
+  }
+});
+</script>
+

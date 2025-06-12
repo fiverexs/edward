@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; }
+    h1 { text-align: center; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
+    th { background-color: #f0f0f0; }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+
+    .branding {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .logo {
+      height: 50px;
+      margin-right: 15px;
+    }
+
+    .company-info {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .company-info .name {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .meta {
+      margin-top: 10px;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔧 Header Section with Logo + Company Name + Address -->
+  <div class="header">
+    <div class="branding">
+      <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}" alt="Company Logo" class="logo">
+      <div class="company-info">
+        <div class="name">5RS Construction Services</div>
+        <div>#10 ilang-ilang St. Progressive 3</div>
+        <div>Bayanan, Bacoor Cavite, 4102</div>
+      </div>
+    </div>
+  </div>
+
+  <h1>Power Usage Report</h1>
+
+  <!-- Meta Info -->
+  <p><strong>User:</strong> {{ user.get_full_name }} ({{ user.email }})</p>
+  <p><strong>Date Range:</strong> {{ start }} → {{ end }}</p>
+  <p><strong>Timezone:</strong> {{ timezone }}</p>
+
+  <!-- Power Data Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Power 1 (kWh)</th>
+        <th>Power 2 (kWh)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.day|date:"Y-m-d" }}</td>
+          <td>{{ row.power1|floatformat:2 }}</td>
+          <td>{{ row.power2|floatformat:2 }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="3">No data available.</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>Total</th>
+        <th>{{ total_power1 }}</th>
+        <th>{{ total_power2 }}</th>
+      </tr>
+    </tfoot>
+  </table>
+
+</body>
+</html>

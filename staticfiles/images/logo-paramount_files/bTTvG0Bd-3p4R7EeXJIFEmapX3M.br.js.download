@@ -1,0 +1,1 @@
+var SvCtrlPack;(function(n){function i(n,i,r,u,f,e){var o=n,s;o+=i?"&prom=1":"";o+=r?"&icnlbl=1":"";o+=u?"&perma=1":"";o+=f?"&host="+f:"";o+=e?"&dislnks=1":"";o+="&IG="+_G.IG+"&SFX="+t+"&iid=SCPKG";t++;s=typeof sj_ajaxCSP=="function"?sj_ajaxCSP:sj_ajax;s(o,{callback:function(n,t){n&&t&&t.appendTo(_d.body)}})}var t=1;n.init=i})(SvCtrlPack||(SvCtrlPack={}))

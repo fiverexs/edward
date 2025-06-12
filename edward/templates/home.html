@@ -1,0 +1,1206 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<style>
+      @keyframes moveBackground {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 0% 50%; /* Moves vertically */
+    }
+}
+@media (max-width: 768px) {
+  .home {
+    background-attachment: scroll;
+    background-size: cover;
+    background-position: center top;
+    animation: moveBackgroundMobile 20s ease-in-out infinite;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px 40px;
+    height: auto;
+    text-align: center;
+  }
+
+  .home-text {
+    padding: 0 10px;
+    text-align: center;
+    max-width: 100%;
+    hyphens: auto;
+  }
+
+  .home-text h1 {
+    font-size: 35px;
+    line-height: 1.3;
+    word-wrap: break-word;
+    margin-bottom: 15px;
+  }
+
+  .home-text h1 span {
+    display: block;
+    color: darkcyan;
+    font-size: inherit;
+    margin: 0;
+  }
+
+  .home-text p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #e0e0e0;
+    margin-bottom: 25px;
+  }
+
+  .button {
+    font-size: 14px;
+    padding: 12px 25px;
+    border-radius: 6px;
+    border: 2px solid #00ffe5;
+    background: transparent;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    width: auto;
+    margin: 0 auto;
+  }
+
+  .button:hover {
+    background-color: #00ffe5;
+    color: #111;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin-top: 60px;
+    padding: 20px;
+  }
+
+  .call-button {
+    margin-top: 15px;
+    font-size: 16px;
+    padding: 12px 22px;
+  }
+}
+@keyframes moveBackgroundMobile {
+  0% {
+    background-position: center 0%;
+  }
+  50% {
+    background-position: center 50%;
+  }
+  100% {
+    background-position: center 0%;
+  }
+}
+@media (max-width: 375px) {
+  .home-text p, .about-text p {
+    font-size: 14px;
+    padding: 0 10px;
+  }
+
+  .button, .call-button {
+    font-size: 13px;
+    padding: 10px 18px;
+  }
+
+  .calculator-container h2,
+  .result-container h3 {
+    font-size: 20px;
+  }
+}
+
+
+.home {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('{% static 'images/background.jpg' %}');
+    background-size: cover; /* Ensures the background covers the entire section */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    animation: moveBackground 30s linear infinite; /* Adjust the duration as needed */
+    transition: background-position 1s ease-in-out;
+}
+#callUsModal.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.6); /* Overlay */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fadeIn 0.3s ease-in-out;
+  overflow-y: auto; /* Allow scroll on mobile if modal height exceeds */
+  padding-top: 100px; /* Space for visibility */
+
+}
+
+/* Modal Content with Glass Effect */
+#callUsModal .modal-content {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 12px;
+  padding: 30px 20px;
+  width: 90%;
+  max-width: 450px;
+  margin: 0 auto;
+  color: #ffffff;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease-in-out;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* 🧑‍💻 Responsive Mobile Tweaks */
+@media (max-width: 480px) {
+  #callUsModal .modal-content {
+    width: 95%;
+    padding: 20px 15px;
+  }
+}
+
+
+/* Heading and paragraph */
+#callUsModal h2 {
+    font-size: 26px;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+#callUsModal p {
+    font-size: 16px;
+    color: #e0e0e0; /* soft white */
+    margin-bottom: 12px;
+}
+
+/* Modal container */
+#callUsModal {
+    position: relative; /* Important for positioning children like the close button */
+}
+
+/* Close button */
+#callUsModal .close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+#callUsModal .close-button:hover {
+    color: darkcyan;
+}
+
+/* Call Now Button */
+#callUsModal .call-button {
+    padding: 12px 25px;
+    background-color: #00b894;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#callUsModal .call-button:hover {
+    background-color: #019875;
+}
+
+/* Animations */
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+
+</style>
+<script>
+function openCallUsModal() {
+    document.getElementById('callUsModal').style.display = 'block';
+}
+
+function closeCallUsModal() {
+    document.getElementById('callUsModal').style.display = 'none';
+}
+
+// Close the modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('callUsModal');
+    if (event.target === modal) {
+        closeCallUsModal();
+    }
+};
+</script>
+
+<section class="home" id="home">
+    <div class="home-text">
+        <h1>{{ config.site_name|default:"Your Company" }}<span> SERVICES</span></h1>
+         <p><span>An independent company</span> which provides Electrical, Mechanical, Instrumentation, and Automation services<br>In an era marked by a growing global consciousness about sustainable living and renewable energy sources<br> to explore the intersection of web-based platforms and solar panel deployment</p>
+       <button class="button" onclick="openCallUsModal()">Call us Now!</button>
+    <div id="callUsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeCallUsModal()">&times;</span>
+        <h2>Contact Us</h2>
+        <p><strong>Phone:</strong> {{ config.contact_phone }}</p>
+        <p><strong>Email:</strong> {{ config.contact_email }}</p>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="tel:{{ config.contact_phone }}" class="call-button">Call Now</a>
+        </div>
+    </div>
+</div>
+</section>
+
+<style>
+.about-us {
+    background-color:  #2a2a2a;
+    padding: 60px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.about-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+/* Text Content Styling */
+.about-text {
+    flex: 1;
+}
+
+.about-text h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: whitesmoke;
+}
+
+.about-text h2 span {
+    color: #ff9800;
+}
+
+.about-text p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: whitesmoke;
+    margin-bottom: 20px;
+    margin-top: 45px;
+}
+
+.about-text .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: black;
+    background-color: #ff9800;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.about-text .btn:hover {
+    background-color: darkcyan;
+}
+
+/* Image Layout */
+.about-images {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+}
+
+.about-image img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-content {
+        flex-direction: column;
+    }
+
+    .about-images {
+        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .about-image img {
+        margin-bottom: 20px;
+    }
+
+    .about-text {
+        text-align: center;
+    }
+}
+</style>
+
+<section class="about-us" id="about">
+    <div class="container">
+        <div class="about-content">
+            <div class="about-text">
+                <p>{{ config.about_us_text_1 }}</p>
+                <p>{{ config.about_us_text_2 }}</p>
+                <p>{{ config.about_us_text_3 }}</p>
+            </div>
+            <div class="about-images">
+                {% if config.about_us_image %}
+                    <div class="about-image">
+                        <img src="{{ config.about_us_image.url }}" alt="About Us">
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="services" id="services">
+    <div class="main-text">
+        <p></p>
+        <h2><span>Our</span> Services</h2>
+    </div>
+    <div class="services-content">
+        <div class="box">
+            <div class="s-icons">
+                <i class='bx bxs-coffee-bean'></i>
+            </div>
+            <h3>Electrical Works</h3>
+            <p>This involves the installation of electrical systems in residential, commercial, and industrial buildings. It includes wiring, lighting, power distribution, and electrical panel installations.<br>Regular maintenance and servicing of electrical systems are essential to ensure their efficiency, reliability, and safety. This includes inspecting wiring, testing equipment, and replacing faulty components.</p>
+            <a href="javascript:void(0);" class="read" onclick="openServiceModal('electrical')">Read More</a>
+        </div>
+        <div class="box">
+            <div class="s-icons">
+                <i class='bx bxs-user-check'></i>
+            </div>
+            <h3>Mechanical Works</h3>
+            <p>Mechanical works encompass a wide range of activities related to the design, installation, maintenance, and operation of mechanical systems and equipment. From heating, ventilation, and air conditioning (HVAC) systems to industrial machinery and automotive engineering, mechanical works play a crucial role in various sectors, including construction, manufacturing, transportation, and more.</p>
+            <a href="javascript:void(0);" class="read" onclick="openServiceModal('mechanical')">Read More</a>
+        </div>
+        <div class="box">
+            <div class="s-icons">
+                <i class='bx bx-line-chart'></i>
+            </div>
+            <h3>What is the purpose of automation?</h3>
+            <p>With automation, we can reduce costs, time, and waste as well as increase productivity, reduce mistakes, and control all the processes of the business in real time. You can replace manual activities with automated ones or reuse the software and systems to support numerous other tasks.</p>
+            <a href="javascript:void(0);" class="read" onclick="openServiceModal('automation')">Read More</a>
+        </div>
+    </div>
+   <!-- Electrical Modal -->
+<div id="modal-electrical" class="service-modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="closeServiceModal('electrical')">&times;</span>
+    <h3>Electrical Works</h3>
+    <img src="{% static 'images/Electrical.jpg' %}" alt="Electrical Work Example">
+    
+    <p>
+      We specialize in safe, efficient, and standards-compliant electrical installations. Our services include:
+    </p>
+    <ul>
+      <li>Commercial and residential wiring</li>
+      <li>Panel installations and upgrades</li>
+      <li>Lighting systems and controls</li>
+      <li>Electrical testing and maintenance</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Mechanical Modal -->
+<div id="modal-mechanical" class="service-modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="closeServiceModal('mechanical')">&times;</span>
+    <h3>Mechanical Works</h3>
+    <img src="{% static 'images/silang.jpg' %}" alt="Mechanical Work Example" style="width:100%; border-radius:8px; margin-bottom:15px;">
+    <p>
+      Our mechanical division handles:
+    </p>
+    <ul>
+      <li>HVAC systems (Heating, Ventilation, Air Conditioning)</li>
+      <li>Pumps, valves, and piping systems</li>
+      <li>Machinery installation and commissioning</li>
+      <li>Preventive and reactive maintenance</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Automation Modal -->
+<div id="modal-automation" class="service-modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="closeServiceModal('automation')">&times;</span>
+    <h3>Automation Services</h3>
+    <img src="{% static 'images/automation.jpg' %}" alt="Automation Work Example" style="width:100%; border-radius:8px; margin-bottom:15px;">
+    <p>
+      We help you optimize business processes using:
+    </p>
+    <ul>
+      <li>PLC and SCADA system integration</li>
+      <li>Sensor networks and real-time data</li>
+      <li>Custom automation scripts and software</li>
+      <li>Remote monitoring and control solutions</li>
+    </ul>
+  </div>
+</div>
+<style>
+  .service-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow: hidden; /* ✅ No page or modal scrollbars */
+}
+
+.service-modal .modal-content {
+  background: #ffffff;
+  color: #333;
+  max-width: 600px;
+  width: 100%;
+  max-height: 95vh;       /* ✅ Make it responsive to screen size */
+  overflow: hidden;       /* ✅ No scroll inside */
+  padding: 25px 30px;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.4s ease-in-out;
+  text-align: center;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+
+
+.service-modal .modal-content h3 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: darkcyan;
+}
+
+.service-modal .modal-content small {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.service-modal .modal-content p {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.service-modal .modal-content ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.service-modal .modal-content ul li {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.service-modal .modal-content ul li::before {
+  content: "✔";
+  color: darkcyan;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.service-modal .modal-content img {
+  width: 100%;
+  max-height: 40vh; /* ✅ Shrink on smaller screens */
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.service-modal .modal-content small {
+  font-size: 13px;
+  color: #888;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.service-modal .modal-content p {
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.service-modal .modal-content ul {
+  padding: 0;
+  list-style-type: none;
+  font-size: 15px;
+  color: #444;
+}
+
+.service-modal .modal-content ul li {
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.service-modal .modal-content ul li::before {
+  content: "✔";
+  color: darkcyan;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.service-modal .close-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.service-modal .close-button:hover {
+  color: #ff9800;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+</style>
+<script>
+function openServiceModal(type) {
+  const modal = document.getElementById(`modal-${type}`);
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+}
+
+function closeServiceModal(type) {
+  const modal = document.getElementById(`modal-${type}`);
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// Optional: Click outside to close
+window.addEventListener('click', function (e) {
+  document.querySelectorAll('.service-modal').forEach(modal => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+});
+</script>
+</section>
+<section class="portfolio" id="projects">
+    <div class="main-text">
+        <h2><span>Projects</span><img src="{% static 'images/logo.png' %}" alt="Logo" class="logo"></h2>
+    </div>
+    <div class="portfolio-content">
+        {% if config.portfolio_image_1 %}
+        <div class="row">
+            <img src="{{ config.portfolio_image_1.url }}" alt="portfolio">
+            <div class="layer">
+                <h5>{{ config.portfolio_text_1 }}</h5>
+                <p>{{ config.portfolio_text_2 }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if config.portfolio_image_2 %}
+        <div class="row">
+            <img src="{{ config.portfolio_image_2.url }}" alt="portfolio">
+            <div class="layer">
+                <h5>{{ config.portfolio_text_3 }}</h5>
+                <p>{{ config.portfolio_text_4 }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if config.portfolio_image_3 %}
+        <div class="row">
+            <img src="{{ config.portfolio_image_3.url }}" alt="portfolio">
+            <div class="layer">
+                <h5>{{ config.portfolio_text_5 }}</h5>
+                <p>{{ config.portfolio_text_6 }}</p>
+            </div>
+        </div>
+        {% endif %}
+    
+
+     {% if config.portfolio_image_4 %}
+        <div class="row">
+            <img src="{{ config.portfolio_image_4.url }}" alt="portfolio">
+            <div class="layer">
+                <h5>{{ config.portfolio_text_7 }}</h5>
+                <p>{{ config.portfolio_text_8 }}</p>
+            </div>
+        </div>
+        {% endif %}
+    
+
+     {% if config.portfolio_image_5 %}
+        <div class="row">
+            <img src="{{ config.portfolio_image_5.url }}" alt="portfolio">
+            <div class="layer">
+                <h5>{{ config.portfolio_text_9 }}</h5>
+                <p>{{ config.portfolio_text_10 }}</p>
+            </div>
+        </div>
+        {% endif %}
+   
+
+     {% if config.portfolio_image_6 %}
+        <div class="row">
+            <img src="{{ config.portfolio_image_6.url }}" alt="portfolio">
+            <div class="layer">
+                <h5>{{ config.portfolio_text_11 }}</h5>
+                <p>{{ config.portfolio_text_12 }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+</section>
+    
+<section class="solar-calculator" id="calculator">
+    <div class="calculator-wrapper">
+        <!-- Calculator Form -->
+        <div class="calculator-container">
+            <h2>Solar Power Calculator</h2>
+            <form id="solarCalculatorForm">
+                <label for="monthlyBill">Monthly Electricity Bill (₱)</label>
+                <input type="range" id="monthlyBill" name="monthlyBill" min="0" max="50000" step="100" value="5000" oninput="updateValue('billValue', this.value)">
+                <span id="billValue">₱5000</span>
+
+                <button type="button" onclick="calculateSolar()">Calculate</button>
+            </form>
+        </div>
+
+        <!-- Results -->
+        <div id="solarResult" class="result-container">
+            
+            <div class="result">
+                <h3>Calculation Results</h3>
+                <p>Enter values and press "Calculate" to see results.</p>
+            </div>
+        </div>
+    </div>
+
+
+<style>
+    :root {
+    --primary-color: darkcyan;
+    --secondary-color: darkorange;
+    --bg-light: #f8f9fa;
+    --text-dark: #2c3e50;
+    --text-muted: #34495e;
+    --accent-green: #27ae60;
+    --result-bg: #eafaf1;
+    --result-border: #d4efdf;
+}
+
+/* Solar Calculator Section */
+.solar-calculator {
+    padding: 120px 20px;
+    background-color: #2a2a2a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calculator-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    max-width: 1000px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.calculator-container,
+.result-container {
+    flex: 1;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.calculator-container h2,
+.result-container h3 {
+    color: var(--text-dark);
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Input Styles */
+.calculator-container label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+    font-size: 16px;
+    text-align: left;
+}
+
+.calculator-container input[type="range"] {
+    width: 100%;
+    margin-bottom: 15px;
+    -webkit-appearance: none;
+    background: var(--primary-color);
+    height: 12px;
+    border-radius: 6px;
+    outline: none;
+    transition: background 0.3s ease-in-out;
+}
+
+.calculator-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s;
+}
+
+.calculator-container input[type="range"]:hover::-webkit-slider-thumb {
+    transform: scale(1.1);
+}
+
+.calculator-container span {
+    display: block;
+    text-align: right;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: var(--text-dark);
+}
+
+/* Button */
+.calculator-container button {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s;
+}
+
+.calculator-container button:hover {
+    background-color:  #2a2a2a;
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.calculator-container button:active {
+    transform: scale(0.97);
+}
+
+/* Results Section */
+.result-container {
+    background: var(--bg-light);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.result {
+    width: 100%;
+    margin-top: 10px;
+    padding: 20px;
+    background-color: var(--result-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--result-border);
+    border-radius: 12px;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.result p {
+    margin: 10px 0;
+    line-height: 1.8;
+    font-size: 16px;
+    color: var(--text-muted);
+}
+
+.result h3 {
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--accent-green);
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calculator-wrapper {
+        flex-direction: column;
+    }
+
+    .calculator-container,
+    .result-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .result {
+        font-size: 14px;
+        padding: 15px;
+    }
+
+    .result h3 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .result {
+        font-size: 13px;
+    }
+
+    .result h3 {
+        font-size: 18px;
+    }
+}
+@media (max-width: 375px) {
+  .home-text h1 {
+    font-size: 26px;
+  }
+
+  .home-text p, .about-text p {
+    font-size: 14px;
+    padding: 0 10px;
+  }
+
+  .button, .call-button {
+    font-size: 13px;
+    padding: 10px 18px;
+  }
+
+  .calculator-container h2,
+  .result-container h3 {
+    font-size: 20px;
+  }
+}
+
+</style>
+
+<script>
+  function calculateSolar() {
+    const monthlyBill = parseFloat(document.getElementById('monthlyBill').value);
+
+    if (isNaN(monthlyBill) || monthlyBill <= 0) {
+        alert("Please enter a valid value.");
+        return;
+    }
+
+    // Constants
+    const kwhPerPeso = 12; // PHP per kWh
+    const solarPanelOutput = 550; // watts per panel
+    const averageSunlightHours = 4; // hours/day
+    const daysInMonth = 30;
+    const costPerWatt = 55; // PHP (example installation cost per watt)
+
+    // Calculations
+    const monthlyEnergyUsage = monthlyBill / kwhPerPeso; // in kWh
+    const dailyEnergyUsage = monthlyEnergyUsage / daysInMonth;
+    const requiredSystemSizeKw = dailyEnergyUsage / averageSunlightHours;
+    const requiredSystemSizeW = requiredSystemSizeKw * 1000;
+    const requiredPanels = Math.ceil(requiredSystemSizeW / solarPanelOutput);
+    const estimatedSystemCost = requiredSystemSizeW * costPerWatt;
+
+    // Display result
+    const resultDiv = document.querySelector('.result');
+    resultDiv.innerHTML = `
+        <h3>Calculation Results:</h3>
+        <p><strong>Monthly Energy Consumption:</strong> ${monthlyEnergyUsage.toFixed(2)} kWh</p>
+        <p><strong>Daily Energy Usage:</strong> ${dailyEnergyUsage.toFixed(2)} kWh/day</p>
+        <p><strong>Required System Size:</strong> ${requiredSystemSizeKw.toFixed(2)} kW (${requiredSystemSizeW.toFixed(0)} W)</p>
+        <p><strong>Number of Solar Panels Required:</strong> ${requiredPanels} panels (${solarPanelOutput}W each)</p>
+       
+        <p><em>Note: Savings may vary depending on panel efficiency, roof orientation, shading, and local rates.</em></p>
+    `;
+}
+
+function updateValue(id, value) {
+    document.getElementById(id).innerText = `₱${value}`;
+}
+
+</script>
+
+
+
+
+    </section>
+    <section class="contact" id="contact">
+       <div class="contact-text">
+            <h4><span>We're here</span> for you</h4>
+            <p>For inquiries, please reach out at: {{ config.contact_email }}<br>
+               Visit our Facebook page: <a href="{{ config.facebook_page }}" target="_blank">{{ config.site_name }}</a><br>
+               Phone: {{ config.contact_phone }}</p>
+               
+        </div>
+       <div class="contact-form">
+            <form id="contactForm" method="POST" action="{% url 'home' %}" class="was-validated">
+                {% csrf_token %}
+                <h2>Have a Question? <span>Contact</span></h2>
+                <input type="text" id="contactName" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <input type="tel" name="phone" placeholder="Your mobile number" required 
+       pattern="[0-9]{11}" title="Please enter exactly 11 digits" maxlength="11">
+                <textarea name="message" cols="35" rows="10" placeholder="How can I help you?" required></textarea>
+                <button type="submit" class="submit">Submit</button>
+            </form>
+        </div>
+    </section>
+
+<!-- MODAL THANK YOU -->
+<div id="thankYouModal" class="modal-thank-you">
+  <div class="modal-thank-you-content">
+    <div class="modal-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h2 id="thankYouHeader">Thank You!</h2>
+    <p>We've received your message and will get back to you shortly.</p>
+    <button onclick="closeThankYouModal()">Close</button>
+  </div>
+</div>
+
+<!-- Modal CSS -->
+<style>
+.modal-thank-you {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-thank-you-content {
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  animation: slideUpRounded 0.5s ease-out forwards;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transition: border-radius 0.3s ease;
+}
+
+/* Icon */
+.modal-icon {
+  font-size: 60px;
+  color: #4caf50;
+  margin-bottom: 20px;
+}
+
+/* Text Content */
+.modal-thank-you-content h2 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.modal-thank-you-content p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Button */
+.modal-thank-you-content button {
+  background-color: darkcyan;
+  color: #fff;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 999px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, border-radius 0.3s ease;
+}
+
+.modal-thank-you-content button:hover {
+  background-color: #ff9800;
+}
+
+/* Rounded Pop Animation */
+@keyframes slideUpRounded {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+    border-radius: 100px;
+  }
+  60% {
+    border-radius: 40px;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    border-radius: 30px;
+  }
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .modal-thank-you-content {
+    padding: 20px;
+  }
+
+  .modal-thank-you-content h2 {
+    font-size: 20px;
+  }
+
+  .modal-thank-you-content p {
+    font-size: 14px;
+  }
+
+  .modal-icon {
+    font-size: 48px;
+  }
+}
+
+
+</style>
+
+
+<section class="end">
+    <div class="last-text">
+        <p>{{ config.footer_text }}</p> 
+    </div>
+</section>
+
+
+<!-- JavaScript -->
+<script>
+    document.getElementById("contactForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+  const name = formData.get("name").trim();
+
+  fetch(form.action, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": form.querySelector('[name=csrfmiddlewaretoken]').value
+    },
+    body: formData,
+  })
+  .then(response => {
+    if (response.ok) {
+      openThankYouModal(name || "friend");
+      form.reset();
+    } else {
+      alert("Something went wrong. Please try again.");
+    }
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    alert("An error occurred.");
+  });
+});
+function openThankYouModal(name) {
+    const modal = document.getElementById("thankYouModal");
+    const header = document.getElementById("thankYouHeader");
+
+    // Inject name into header
+    header.textContent = `Thank you, ${name}!`;
+
+    modal.style.display = "flex";
+  }
+
+  function closeThankYouModal() {
+    document.getElementById("thankYouModal").style.display = "none";
+  }
+
+document.addEventListener('DOMContentLoaded', function () {
+  const modal = document.getElementById('thankYouModal');
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.get('submitted') === 'True') {
+    modal.style.display = 'flex';
+
+    urlParams.delete('submitted');
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+
+  window.onclick = function (event) {
+    if (event.target === modal) {
+      closeThankYouModal();
+    }
+  };
+});
+
+    // Sticky header on scroll
+    const header = document.querySelector('header');
+    window.addEventListener('scroll', function() {
+        header.classList.toggle('sticky', window.scrollY > 0);
+    });
+</script>
+
+{% endblock %}

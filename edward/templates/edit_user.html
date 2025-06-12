@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+       * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar styling */
+         .sidenav {
+            height: 100%;
+            width: 220px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color:  #2c3e50;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #ecf0f1;
+        }
+
+        .sidenav h2 {
+            color: #ecf0f1;
+            font-size: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidenav a {
+            width: 100%;
+            padding: 10px;
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 4px;
+            text-align: left;
+            transition: background-color 0.3s;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidenav a .icon {
+            margin-right: 10px;
+            font-size: 18px;
+            color: #ecf0f1; /* Icon color matching the sidebar text color */
+        }
+
+        .sidenav a:hover {
+            background-color: #34495e;
+        }
+
+        .logout-button {
+            margin-top: auto;
+            padding: 12px;
+           
+            color: #ecf0f1;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            text-decoration: none;
+            width: 90%;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-button .icon {
+            margin-right: 10px;
+            font-size: 18px;
+            color: #ecf0f1;
+        }
+
+        .sidenav a.logout-button:hover {
+    background-color: #e74c3c;  /* Red color for hover */
+    color: #ffffff;  /* White text on hover */
+}
+        /* Main content area styling */
+        .main {
+            margin-left: 250px; /* Space for sidebar */
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .main h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            max-width: 500px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) {
+            .form-container {
+                width: 90%;
+            }
+        }
+        .spacing{
+            margin-top: 20px;
+        }
+        .user-profile {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-profile .profile-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #f8f9fa;
+    margin: 0 auto 10px auto; /* Centers the avatar */
+}
+
+.user-profile h2 {
+    font-size: 18px;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.user-profile p {
+    font-size: 14px;
+    color: #ced4da;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="sidenav">
+        <div class="user-profile">
+    <div class="profile-avatar">
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" style="width: 70px; height: 70px; border-radius: 50%;">
+        {% else %}
+            <i class="fas fa-user"></i>
+        {% endif %}
+    </div>
+    <h2>{{ user.get_full_name }}</h2>
+    <p style="font-size: 14px; color: #ced4da;">{{ user.email }}</p>
+</div>
+
+        <a href="{% url 'admin_dashboard' %}"><i class="fas fa-home icon"></i> Dashboard</a>
+        <a href="{% url 'user_management' %}"><i class="fas fa-users icon"></i> User Management</a>
+        <a href="{% url 'pending_work_list' %}">
+    <i class="fas fa-tasks icon"></i> Pending Work
+</a>
+        <a href="{% url 'site_statistics' %}"><i class="fas fa-chart-bar icon"></i> Site Statistics</a>
+        <a href="{% url 'website_configuration' %}"><i class="fas fa-cogs icon"></i> Website Configuration</a>
+        
+        <a href="{% url 'archived_contacts' %}"><i class="fas fa-archive icon"></i> Archived Contacts</a>
+
+        <div class="spacing"></div>
+
+        <a href="{% url 'logout' %}" class="logout-button"><i class="fas fa-sign-out-alt icon"></i> Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main">
+        <h1>Edit User: {{ user.username }}</h1>
+
+       <div class="form-container">
+    <form method="post" action="{% url 'edit_user' user.id %}">
+        {% csrf_token %}
+
+        <label>First Name:</label>
+        <input type="text" name="first_name" value="{{ user.first_name }}">
+
+        <label>Last Name:</label>
+        <input type="text" name="last_name" value="{{ user.last_name }}">
+
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ user.email }}">
+
+        <label>Phone Number:</label>
+        <input type="tel" name="phone" value="{{ profile.phone }}"> <!-- Assuming the phone is in the profile -->
+
+        <label>Address:</label>
+        <input type="text" name="address" value="{{ profile.address }}"> <!-- Assuming the address is in the profile -->
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+
+            <!-- Back Link -->
+            <a href="{% url 'user_management' %}" class="back-link">⬅️ Back to User Management</a>
+        </div>
+    </div>
+
+</body>
+</html>

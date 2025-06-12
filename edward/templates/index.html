@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>5RS Construction Services</title>
+    <link rel="stylesheet" type="text/css" href="{% static  '/CSS/style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="icon" type="images/x-icon" href="{% static 'images/logo.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap">
+    
+    <style>
+        /* Scroll-to-Top Button Styling */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: darkcyan;
+            color: white;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            display: none; /* Initially hidden */
+            z-index: 1000;
+            transition: opacity 0.3s, transform 0.3s;
+
+        }
+        .scroll-to-top:hover {
+            background-color: darkorange;
+            transform: scale(1.1); /* Slight zoom effect */
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+    {% block content %}
+    {#home#}
+    {% endblock %}
+    {% include 'footer.html' %}
+
+    <!-- Scroll-to-Top Button -->
+    <div id="scrollToTop" class="scroll-to-top" onclick="scrollToTop()">
+        &#8679;
+    </div>
+    
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <script>
+        // Show or hide the scroll-to-top button based on scroll position
+        window.onscroll = function() {
+            const scrollToTopButton = document.getElementById('scrollToTop');
+            if (document.documentElement.scrollTop > 200 || document.body.scrollTop > 200) {
+                scrollToTopButton.style.display = 'block';
+            } else {
+                scrollToTopButton.style.display = 'none';
+            }
+        };
+
+        // Smooth scroll to the top of the page
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>

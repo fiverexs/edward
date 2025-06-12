@@ -1,0 +1,349 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FAQ - User Dashboard</title>
+  <link rel="icon" type="images/x-icon" href="{% static 'images/logo.png' %}" >
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Reset & Basics */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f4f8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #2d3436;
+  overflow-x: hidden;
+}
+
+/* Sidebar Styling */
+.sidenav {
+            width: 250px;
+            background-color: #343a40;
+            color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+..sidenav h2 {
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .sidenav a {
+            display: flex;
+            align-items: center;
+            width: 90%;
+            padding: 12px 15px;
+            color: #ced4da;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 4px;
+            margin: 8px 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .sidenav a .icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidenav a:hover {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+.sidenav a.logout-link:hover {
+  background-color: #e74c3c;
+  color: #ffffff;
+}
+
+/* User Profile */
+.user-profile {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.user-profile .profile-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #495057;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #f8f9fa;
+  margin: 0 auto 10px auto;
+}
+.user-profile h2 {
+  font-size: 18px;
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+.user-profile p {
+  font-size: 14px;
+  color: #ced4da;
+}
+
+/* Hamburger Button */
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  background: transparent !important;  /* ✅ remove background */
+  border: none;                        /* ✅ remove border */
+  color: #343a40;                      /* icon color (adjust if needed) */
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: none !important;         /* clear any shadow */
+}
+
+/* Content Wrapper */
+.content {
+  flex-grow: 1;
+  padding: 40px 20px;
+  transition: margin-left 0.3s ease;
+  display: flex;
+  justify-content: center;
+}
+@media (min-width: 769px) {
+  .content {
+    margin-left: 250px;
+  }
+}
+
+/* FAQ Container */
+.dashboard-container {
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.faq-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.faq-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* slightly more space between FAQ cards */
+  margin-top: 20px;
+  
+}
+
+.faq-item {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.faq-question {
+  background: darkcyan;
+  color: white;
+  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  
+}
+.faq-question i {
+  transition: transform 0.3s ease;
+}
+.faq-question:hover {
+  background-color: #009e7f;
+}
+.faq-answer {
+  display: none;
+  padding: 15px 20px;
+  background-color: #f0f4f8;
+  color: #2d3436;
+}
+.faq-item.active .faq-answer {
+  display: block;
+}
+.faq-item.active .faq-question i {
+  transform: rotate(180deg);
+}
+
+/* -------------------- Responsive -------------------- */
+@media (max-width: 768px) {
+  .sidenav {
+    transform: translateX(-100%);
+  }
+
+  .sidenav.show {
+    transform: translateX(0);
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  .faq-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+
+}
+
+  .faq-question {
+    font-size: 15px;
+    padding: 12px 16px;
+  }
+
+  .faq-answer {
+    padding: 12px 16px;
+  }
+
+  .content {
+    margin-left: 0;
+    padding: 20px 10px;
+    justify-content: center;
+  }
+
+  .dashboard-container {
+    padding: 20px;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+    <div class="sidenav">
+        <div class="user-profile">
+    <div class="profile-avatar">
+         {% if usser.profile.profile_picture %}
+  <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture"
+       style="width: 70px; height: 70px; border-radius: 50%;">
+{% else %}
+  <i class="fas fa-user"></i>
+{% endif %}
+    </div>
+    <h2>{{ user.get_full_name }}</h2>
+    <p style="font-size: 14px; color: #ced4da;">{{ user.email }}</p>
+</div>
+        <a href="{% url 'user_dashboard' %}"><i class="fas fa-tachometer-alt icon"></i> Dashboard</a>
+        <a href="{% url 'update_account' %}"><i class="fas fa-user icon"></i> Update Account</a>
+        <a href="{% url 'energy_monitoring' %}"><i class="fas fa-bolt icon"></i> Energy Monitoring</a>
+        <a href="{% url 'user_faq' %}"><i class="fas fa-question-circle icon"></i> FAQ</a>
+      <a href="{% url 'logout' %}" class="logout-link" onclick="return confirmLogout()">
+    <i class="fas fa-sign-out-alt icon"></i> Logout
+</a>
+    </div>
+    <button id="hamburgerToggle" class="hamburger-btn">
+  <i class="fas fa-bars"></i>
+</button>
+
+  <!-- Main Content -->
+  <div class="content">
+    <div class="dashboard-container">
+      <h1 class="faq-title">❓ Frequently Asked Questions</h1>
+
+      <div class="faq-section">
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <i class="fas fa-chevron-down"></i> How do I reset my password?
+          </button>
+          <div class="faq-answer">
+            <p>Go to the 'Update Account' page and use the password fields to reset your password.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <i class="fas fa-chevron-down"></i> How can I view my power usage?
+          </button>
+          <div class="faq-answer">
+            <p>You can monitor live and historical power usage under the 'Energy Monitoring' section.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <i class="fas fa-chevron-down"></i> Can I change my email address?
+          </button>
+          <div class="faq-answer">
+            <p>Yes! On the 'Update Profile' in User Dashboard page, you can modify your email and other personal details.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" onclick="toggleFaq(this)">
+            <i class="fas fa-chevron-down"></i> What is a live power chart?
+          </button>
+          <div class="faq-answer">
+            <p>It's a real-time visualization of your power consumption that updates automatically every few seconds.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const hamburgerBtn = document.getElementById("hamburgerToggle");
+  const sidebar = document.querySelector(".sidenav");
+  const body = document.body;
+
+  hamburgerBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("show");
+    body.classList.toggle("nav-open");
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+      sidebar.classList.remove("show");
+      body.classList.remove("nav-open");
+    }
+  });
+
+  function toggleFaq(button) {
+    const item = button.closest(".faq-item");
+    item.classList.toggle("active");
+  }
+
+  function confirmLogout() {
+    return confirm("Are you sure you want to log out?");
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+{% load static %}
+<header>
+  <div class="nav-container">
+    <div class="logo-box">
+      <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+    </div>
+
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <ul class="navlist" id="navMenu">
+      <li><a href="/">Home</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#calculator">Solar Estimation</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="{% url 'user_login' %}">Energy Monitoring</a></li>
+    </ul>
+  </div>
+</header>
+
+<style>
+    body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+    /* Container and Layout */
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: background-color 0.3s ease, padding 0.3s ease;
+}
+
+/* Sticky Scroll Effect */
+.nav-container.sticky {
+  background-color: #1e1e1e;
+  padding: 10px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+  width: 79px;
+  cursor: pointer;
+  margin-left: 20px;
+  margin-top: 1px;
+}
+
+/* Nav list styles */
+.navlist {
+  display: flex;
+  list-style: none;
+  gap: 12px;
+  margin: 10px;
+}
+
+.navlist li a {
+  font-family: Arial, Helvetica, sans-serif;
+  color: whitesmoke;
+  font-size: 19px;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+  margin-left: 10px;
+}
+
+
+.navlist li a:hover {
+  color: darkcyan;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.hamburger span {
+  width: 28px;
+  height: 3px;
+  background-color: #fff;
+  border-radius: 4px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .navlist {
+    display: none;
+    position: absolute;
+    top: 65px;
+    right: 20px;
+    background: #1e1e1e;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .navlist.show {
+    display: flex;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}
+@media (max-width: 768px) {
+  .logo-box {
+    display: none;
+  }
+}
+
+</style>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById("navMenu");
+  menu.classList.toggle("show");
+}
+
+// Optional: Sticky nav on scroll
+window.addEventListener('scroll', function () {
+  const navbar = document.querySelector('.nav-container');
+  navbar.classList.toggle('sticky', window.scrollY > 50);
+});
+</script>

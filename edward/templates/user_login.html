@@ -1,0 +1,268 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Login</title>
+ <link rel="icon" type="images/x-icon" href="{% static 'images/logo.png' %}" >
+ <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+
+  <style>
+    :root {
+  --accent-color: #00bcd4;
+  --hover-color: gold;
+  --text-light: #f1f1f1;
+  --bg-dark: rgba(0, 0, 0, 0.6);
+  --glass: rgba(42, 42, 42, 0.65);
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100vh;
+  overflow: hidden; /* 💡 Prevent scroll */
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url('{% static "images/mindoro.jpg" %}') no-repeat center center/cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0; /* ✅ Remove vertical padding */
+  min-height: 100vh;
+}
+
+.login-container {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  padding: 35px 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  max-width: 380px;
+  color: var(--text-light);
+  transition: all 0.3s ease;
+}
+
+.back-button {
+  background: none;
+  color: var(--accent-color);
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.3s;
+  text-decoration: none; /* 💥 Removes underline */
+}
+
+.back-button:hover {
+  color: var(--hover-color);
+  text-decoration: none; /* Just in case browser adds it on hover */
+}
+
+
+h2 {
+  color: var(--text-light);
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 26px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #ccc;
+}
+
+.input-group .fa-user,
+.input-group .fa-lock {
+  left: 14px;
+  pointer-events: none;
+}
+
+.input-group .toggle-password {
+  right: 14px;
+  cursor: pointer;
+  pointer-events: all;
+  color: var(--accent-color);
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 40px 12px 38px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-light);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.input-group input::placeholder {
+  color: #aaa;
+}
+
+.input-group input:focus {
+  border-color: var(--accent-color);
+  background-color: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: var(--hover-color);
+  color: #000;
+  transform: scale(1.02);
+}
+
+.message {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.message p.success {
+  color: #4caf50;
+}
+
+.message p.error {
+  color: #ff4d4f;
+}
+
+.signup-link {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 15px;
+  color: var(--text-light);
+}
+
+.signup-link a {
+  color: #00bfff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.signup-link a:hover {
+  color: var(--hover-color);
+}
+
+@media (max-width: 400px) {
+  .login-container {
+    padding: 25px 20px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+}
+@media (max-height: 500px) {
+  body {
+    overflow-y: auto;
+  }
+}
+
+
+
+
+  </style>
+</head>
+<body>
+  <div class="login-container">
+   <a href="{% url 'home' %}" class="back-button">⬅ Back</a>
+   
+
+    <form method="post">
+      {% csrf_token %}
+      <h2>Welcome</h2>
+      <p class="subtitle">Log in to continue to your account</p>
+<div class="input-group">
+  <i class="fas fa-user"></i>
+  <input type="text" name="username" placeholder="Username" required>
+</div>
+
+<!-- Password Field -->
+<div class="input-group">
+  <i class="fas fa-lock"></i>
+  <input type="password" id="password" name="password" placeholder="Password" required>
+  <i class="fas fa-eye toggle-password" id="toggleIcon" onclick="togglePasswordVisibility()" title="Show Password"></i>
+</div>
+
+
+
+      <button type="submit">Login</button>
+
+      {% if messages %}
+  <div class="message">
+    {% for message in messages %}
+      <p class="message {{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+    </form>
+
+  <div class="signup-link">
+  <p>Don't have an account? <a href="{% url 'create_client_account' %}">Sign Up</a></p>
+  <p style="margin-top: 8px;">Are you an admin? <a href="{% url 'admin_login' %}">Sign in as Administrator</a></p>
+</div>
+
+  </div>
+<script>
+function togglePasswordVisibility() {
+  const passwordInput = document.getElementById("password");
+  const toggleIcon = document.getElementById("toggleIcon");
+
+  const isVisible = passwordInput.type === "text";
+  passwordInput.type = isVisible ? "password" : "text";
+  toggleIcon.classList.toggle("fa-eye-slash", !isVisible);
+  toggleIcon.classList.toggle("fa-eye", isVisible);
+  toggleIcon.title = isVisible ? "Hide Password" : "Show Password";
+}
+</script>
+
+
+
+
+
+
+</body>
+</html>

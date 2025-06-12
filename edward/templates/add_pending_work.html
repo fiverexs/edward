@@ -1,0 +1,651 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Pending Work</title>
+     <link rel="icon" type="images/x-icon" href="{% static 'images/logo.png' %}" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+    :root {
+      --sidebar-width: 220px;
+      --sidebar-collapsed-width: 60px;
+      --sidebar-bg:  #1f2d3d;
+      --sidebar-hover: #324a5e;
+      --sidebar-text: #ecf0f1;
+      --transition-speed: 0.3s;
+      --card-bg: #ffffff;
+      --button-bg: #2c3e50;
+      --button-accent: #00b894;
+      --danger: #e74c3c;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidenav {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  transition: width var(--transition-speed);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+
+  /* 👇 Add this padding to top */
+  padding-top: 30px;
+}
+
+.sidenav a {
+  color: var(--sidebar-text);
+  text-decoration: none;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+
+  /* 👇 Add spacing between links */
+  margin-bottom: 8px;
+}
+
+    .sidenav.collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+.main.collapsed {
+  margin-left: var(--sidebar-collapsed-width);
+}
+.sidenav, .main {
+  transition: width var(--transition-speed), margin-left var(--transition-speed);
+}
+
+    .sidenav .user-profile {
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.sidenav.collapsed .user-profile h2,
+.sidenav.collapsed .user-profile p {
+  display: none;
+}
+
+    .sidenav a {
+      color: var(--sidebar-text);
+      text-decoration: none;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.3s;
+      white-space: nowrap;
+    }
+
+    .sidenav a:hover {
+      background-color: var(--sidebar-hover);
+    }
+
+    .sidenav a .icon {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidenav.collapsed a span {
+      display: none;
+    }
+
+    .logout-button {
+      margin-top: auto;
+      margin-bottom: 20px;
+      background-color: #e74c3c;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      border-radius: 5px;
+      color: white;
+      text-decoration: none;
+    }
+
+    .logout-button:hover {
+      background-color: #c0392b;
+    }
+
+    .hamburger {
+  display: block; /* used to be 'none' */
+  position: fixed;
+  top: 15px;
+  left: 10px;
+  font-size: 20px;
+ background: transparent !important;  /* ✅ remove background */
+  border: none;
+  color: #2c3e50;
+  padding: 10px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 2001;
+}
+
+    .main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: 80px 20px 20px 20px; /* Added top padding */
+  transition: margin-left var(--transition-speed);
+  height: 100vh;
+  overflow-y: auto;
+}
+
+    .main.collapsed {
+  margin-left: var(--sidebar-collapsed-width);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+
+    @media (max-width: 768px) {
+      .sidenav {
+        transform: translateX(-100%);
+        position: absolute;
+      }
+
+      .sidenav.active {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0 !important;
+        padding-top: 60px;
+      }
+
+      .main.shifted {
+        margin-left: var(--sidebar-width);
+      }
+
+      .hamburger {
+        display: block;
+      }
+    }
+.content-wrapper {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 900px; /* 👈 Wider container */
+  margin: 5px auto 0 auto; /* 👈 Centered horizontally */
+}
+
+
+        .content-wrapper h1 {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .content-wrapper form label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: normal;
+        }
+
+        .content-wrapper form input,
+        .content-wrapper form textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            background-color: #fafafa;
+            transition: border-color 0.3s ease;
+        }
+
+        .content-wrapper form input:focus,
+        .content-wrapper form textarea:focus {
+            border-color: #2c3e50;
+            box-shadow: 0 0 5px rgba(44, 62, 80, 0.3);
+        }
+
+        .content-wrapper form button {
+            width: 100%;
+            padding: 14px;
+            background-color: #2c3e50;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .content-wrapper form button:hover {
+            background-color: #34495e;
+        }
+
+     @media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px;
+  }
+
+  .content-wrapper {
+    margin-top: 20px;
+    box-shadow: none;
+    padding: 20px;
+  }
+}
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.modal-buttons {
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        .modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+        .modal-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .cancel-button {
+            background-color: #95a5a6;
+            color: #fff;
+        }
+
+        .confirm-button {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+        .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close-button:hover, .close-button:focus {
+        color: #000;
+        text-decoration: none;
+    
+    }
+    /* === Top Bar Styling === */
+.topbar {
+  width: 100%;
+  height: 60px;
+  background-color:white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1002;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 30px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.greeting {
+  font-size: 16px;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* Optional: shrink on mobile */
+@media (max-width: 768px) {
+  .greeting {
+    display: none;
+  }
+}
+
+
+
+/* === Profile Icon Avatar === */
+.topbar .profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #2c3e50;
+  cursor: pointer;
+}
+
+.topbar .profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Optional: dropdown menu */
+.profile-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  display: none;
+  flex-direction: column;
+  min-width: 150px;
+  padding: 10px;
+  z-index: 999;
+}
+
+.profile-dropdown a {
+  padding: 10px;
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.profile-dropdown a:hover {
+  background-color: #f4f4f4;
+}
+
+.dashboard-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+
+}
+.logo {
+  height: 45px;
+  width: auto;
+  vertical-align: middle;
+  
+}
+@media (max-width: 768px) {
+  .main {
+    padding: 80px 15px 30px 15px;
+  }
+
+  .content-wrapper {
+    width: 100%;
+    margin-top: 20px;
+    padding: 20px;
+  }
+}
+.form-center-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+}
+.back-button-standalone {
+  display: inline-block;
+  margin-left: 40px;
+  margin-top: 20px;
+  color: #2c3e50;
+  font-weight: 600;
+  text-decoration: none;
+  background-color: #whitesmoke;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.back-button-standalone:hover {
+  background-color: #dcdde1;
+  color: #000;
+}
+@media (max-width: 768px) {
+  .back-button-standalone {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+}
+.profile-dropdown a[href*="{% url 'logout' %}"]:hover {
+  color: whitesmoke;
+  background-color: #e74c3c;
+}
+
+
+       
+    </style>
+</head>
+<body>
+  <div class="topbar">
+  <div class="topbar-left">
+    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+    <span class="dashboard-title">Work List</span>
+  </div>
+
+
+  <div class="topbar-right">
+    <span class="greeting">Hi, {{ user.first_name }}</span>
+     <div class="profile-icon" onclick="toggleProfileDropdown()">
+      <img src="{% static 'images/avatar.png' %}" alt="Profile">
+    </div>
+
+
+    <div class="profile-dropdown" id="profileDropdown">
+      <a href="#" onclick="openProfileModal()"><i class="fas fa-user"></i> My Profile</a>
+      <a href="#" onclick="openChangePasswordModal()"><i class="fas fa-key"></i> Change Password</a>
+       <a href="{% url 'logout' %}" class="logout-link" onclick="return confirmLogout()">
+  <i class="fas fa-sign-out-alt"></i> Logout
+</a>
+    </div>
+  </div>
+</div>
+
+    <div class="hamburger" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</div>
+
+<!-- Sidebar -->
+{% include 'admin/sidebar.html' %}
+
+ <div class="main" id="main-content">
+
+  <div class="form-center-wrapper">
+    <div class="content-wrapper">
+      <a href="{% url 'pending_work_list' %}" class="back-button-standalone">
+    ⬅ Back to Work List
+  </a>
+
+      <h1>Add Pending Work</h1>
+      <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Task</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+    <div id="profileModal" class="modal">
+  <div class="modal-content" style="max-width: 450px;">
+    <span class="close-button" onclick="closeProfileModal()">&times;</span>
+    <div style="text-align: center;">
+      <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 15px;">
+        <img src="{% static 'images/avatar.png' %}" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <h3>{{ user.get_full_name }}</h3>
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+
+
+    
+    </div>
+  </div>
+</div>
+<div id="changePasswordModal" class="modal">
+  <div class="modal-content" style="max-width: 450px;">
+    <span class="close-button" onclick="closeChangePasswordModal()">&times;</span>
+    <div style="text-align: center;">
+      <h3>Change Password</h3>
+      <form method="POST" action="{% url 'change_password' %}">
+        {% csrf_token %}
+        <div style="text-align: left;">
+          <label>Old Password:</label><br>
+          <input type="password" name="old_password" required style="width:100%; padding:8px; margin-bottom:10px;">
+
+          <label>New Password:</label><br>
+          <input type="password" name="new_password1" required style="width:100%; padding:8px; margin-bottom:10px;">
+
+          <label>Confirm New Password:</label><br>
+          <input type="password" name="new_password2" required style="width:100%; padding:8px; margin-bottom:15px;">
+        </div>
+
+        <button type="submit" class="send-notification-btn" style="width: 100%;">Update Password</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <script>
+        // Close modals if user clicks outside
+window.addEventListener("click", function (event) {
+    const deleteModal = document.getElementById('deleteModal');
+    const editModal = document.getElementById('editModal');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const profileIcon = document.querySelector('.profile-icon');
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.querySelector('.hamburger');
+
+    if (event.target === deleteModal) closeModal();
+    if (event.target === editModal) closeEditModal();
+
+    // Close sidebar on mobile
+    if (
+        window.innerWidth <= 768 &&
+        !sidebar.contains(event.target) &&
+        !hamburger.contains(event.target)
+    ) {
+        sidebar.classList.remove('active');
+        document.getElementById('main-content').classList.remove('shifted');
+    }
+
+    // Close profile dropdown
+    if (profileDropdown && profileIcon &&
+        !profileIcon.contains(event.target) &&
+        !profileDropdown.contains(event.target)) {
+        profileDropdown.style.display = "none";
+    }
+});
+
+// ---------------- Utilities ---------------- //
+function toggleDetails(userId) {
+    document.querySelectorAll('.user-details').forEach(row => {
+        if (row.id !== `details-${userId}`) row.classList.add('hidden');
+    });
+
+    const row = document.getElementById(`details-${userId}`);
+    if (row) row.classList.toggle('hidden');
+}
+
+function confirmLogout() {
+    return confirm("Are you sure you want to log out?");
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('main-content');
+
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('active');
+        main.classList.toggle('shifted');
+    } else {
+        sidebar.classList.toggle('collapsed');
+        main.classList.toggle('collapsed');
+    }
+}
+
+function openNotificationModal() {
+    const modal = document.getElementById('notificationModal');
+    modal.style.display = "flex"; 
+}
+function closeNotificationModal() {
+    document.getElementById('notificationModal').style.display = 'none';
+}
+
+function openProfileModal() {
+    closeProfileDropdown();
+    const modal = document.getElementById("profileModal");
+    modal.style.display = "flex"; // ✅ Make sure it's flex not just "block"
+}
+function closeProfileModal() {
+    document.getElementById("profileModal").style.display = "none";
+}
+
+function openChangePasswordModal() {
+    closeProfileDropdown();
+     const modal = document.getElementById("changePasswordModal");
+    modal.style.display = "flex";
+}
+function closeChangePasswordModal() {
+    document.getElementById("changePasswordModal").style.display = "none";
+}
+
+function toggleProfileDropdown() {
+    const dropdown = document.getElementById("profileDropdown");
+    dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+}
+
+function closeProfileDropdown() {
+    document.getElementById("profileDropdown").style.display = "none";
+}
+    function confirmLogout() {
+        return confirm("Are you sure you want to log out?");
+    }
+  </script>
+</body>
+</html>

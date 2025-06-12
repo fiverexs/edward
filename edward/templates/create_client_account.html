@@ -1,0 +1,502 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="images/x-icon" href="{% static 'images/logo.png' %}">
+  <title>Sign Up Account Client</title>
+  <style>
+    :root {
+      --primary: #00e0ff;
+      --accent: #00c8ff;
+      --text-light: #f0f0f0;
+      --text-muted: #aaa;
+      --bg-dark: #121212;
+      --card-dark: #1e1e1e;
+      --input-bg: #2c2c2c;
+      --input-border: #444;
+      --error: #ff4d4d;
+      --success: #4caf50;
+    }
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* Prevent scroll */
+}
+
+    body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url('{% static "images/mindoro.jpg" %}') no-repeat center center/cover;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+   min-height: 100vh;
+}
+
+    .form-container {
+      background: var(--card-dark);
+      padding: 40px 30px;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    h2, h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--text-light);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-light);
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: #333;
+    }
+
+    button {
+      background-color: darkcyan;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 15px;
+      margin-top: 10px;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--accent);
+      transform: scale(1.02);
+    }
+
+    .form-navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .message {
+      text-align: center;
+      margin: 10px 0;
+      font-weight: bold;
+      color: var(--text-light);
+    }
+
+    .message.success { color: var(--success); }
+    .message.error { color: var(--error); }
+
+    .back-button {
+      color: var(--primary);
+      font-size: 14px;
+      display: inline-block;
+      margin-bottom: 15px;
+      text-decoration: none;
+    }
+
+    #strength-bar {
+      height: 8px;
+      width: 100%;
+      background-color: #444;
+      border-radius: 4px;
+      margin-top: 2px;
+      margin-bottom: 9px;
+    }
+
+    #strength-fill {
+      height: 100%;
+      width: 0;
+      background-color: red;
+      border-radius: 4px;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 999;
+  padding: 0;
+  overflow-y: auto;
+}
+
+    .modal-content {
+  background: #1e1e1e;
+  color: #f0f0f0;
+  margin: 0 auto;
+  margin-top: 30px;
+  padding: 30px;
+  max-width: 700px;
+  width: 90%;
+  border-radius: 0 0 10px 10px;
+  overflow-y: auto;
+  max-height: 90vh;
+  position: relative;
+  line-height: 1.6;
+  font-size: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  animation: slideDown 0.3s ease-out;
+}
+@keyframes slideDown {
+  from {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .close:hover {
+      color: white;
+    }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+
+   .password-group {
+  position: relative;
+}
+
+.password-group input {
+  padding: 12px 40px 12px 35px; /* space left/right for icons */
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  width: 100%;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+.password-group .lock-icon {
+  position: absolute;
+  left: 10px;
+  top: 20px;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.password-group .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 20px;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+}
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+.error {
+  color: #ff6b6b; /* bright red */
+  background-color: rgba(255, 107, 107, 0.1);
+  padding: 8px 12px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border-left: 3px solid #ff6b6b;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+ul.errorlist {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 10px 0;
+}
+
+ul.errorlist li {
+  color: #ff6b6b;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.terms-check {
+  margin-top: 15px;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.terms-check input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.2);
+  accent-color: var(--primary); /* modern browser checkbox color */
+}
+
+.terms-check a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.terms-check a:hover {
+  color: var(--accent);
+}
+
+
+
+
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <a href="javascript:history.back()" class="back-button">&larr; Back to Login</a>
+   <h2>Sign up Account</h2>
+    <div id="form-feedback" class="message"></div>
+
+    <form method="POST" action="{% url 'create_client_account' %}">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <!-- Step 1 -->
+      <div class="form-step active">
+        <p class="subtitle">Personal Information</p>
+        <div class="form-group">
+          {{ form.first_name }}
+          {% if form.first_name.errors %}<div class="error">{{ form.first_name.errors }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.last_name }}
+          {% if form.last_name.errors %}<div class="error">{{ form.last_name.errors }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-step">
+        <p class="subtitle">Account Information</p>
+        <div class="form-group">
+          {{ form.username }}
+          {% if form.username.errors %}<div class="error">{{ form.username.errors }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.email }}
+          {% if form.email.errors %}<div class="error">{{ form.email.errors }}</div>{% endif %}
+        </div>
+        <div class="form-group password-group">
+  <i class="fas fa-lock lock-icon"></i>
+  {{ form.password1 }}
+  <i class="fas fa-eye toggle-password" toggle="#id_password1" title="Show Password"></i>
+  <div id="strength-bar"><div id="strength-fill"></div></div>
+  {% if form.password1.errors %}<div class="error">{{ form.password1.errors }}</div>{% endif %}
+</div>
+
+<!-- Password 2 -->
+<div class="form-group password-group">
+  <i class="fas fa-lock lock-icon"></i>
+  {{ form.password2 }}
+  <i class="fas fa-eye toggle-password" toggle="#id_password2" title="Show Password"></i>
+  {% if form.password2.errors %}<div class="error">{{ form.password2.errors }}</div>{% endif %}
+</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="form-step">
+        <h3>Review & Submit</h3>
+        <p class="subtitle">Review your details and agree to the terms:</p>
+        <div class="form-group terms-check">
+  <label for="terms_and_conditions">
+    <input type="checkbox" name="terms_and_conditions" id="terms_and_conditions" required>
+    I agree to the <a href="javascript:void(0);" id="termsLink">Terms and Conditions</a>
+  </label>
+  {% if form.terms_and_conditions.errors %}
+  <div class="error">{{ form.terms_and_conditions.errors }}</div>
+  {% endif %}
+</div>
+
+      </div>
+
+      <div class="form-navigation">
+        <button type="button" id="prevBtn">Previous</button>
+        <button type="button" id="nextBtn">Continue</button>
+        <button type="submit" id="submitBtn" style="display: none;">Create Account</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal -->
+  <div id="termsModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Terms and Conditions</h2>
+     <div class="terms-body">
+  <p><strong>Welcome to 5RS Construction Services</strong></p>
+
+  <p>By creating an account with 5RS Construction Services, you agree to comply with and be bound by the following terms and conditions. Please review them carefully. If you do not agree to these terms, you should not proceed with account creation.</p>
+
+  <h3>1. Account Registration</h3>
+  <ul>
+    <li>You must provide accurate, complete, and current information when registering.</li>
+    <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
+    <li>5RS reserves the right to suspend or terminate accounts that provide false information or violate our policies.</li>
+  </ul>
+
+  <h3>2. User Responsibilities</h3>
+  <ul>
+    <li>You agree not to use the platform for any unlawful or unauthorized purpose.</li>
+    <li>You must not transmit any worms, viruses, or any code of a destructive nature.</li>
+    <li>You are solely responsible for the activity that occurs on your account.</li>
+  </ul>
+
+  <h3>3. Privacy</h3>
+  <p>Your data is handled according to our Privacy Policy. We are committed to protecting your information and will not share your data without consent, except as required by law.</p>
+
+  <h3>4. Intellectual Property</h3>
+  <p>All content provided by 5RS, including logos, designs, and service descriptions, is the intellectual property of 5RS Construction Services and may not be copied or reproduced without permission.</p>
+
+  <h3>5. Limitation of Liability</h3>
+  <p>5RS Construction Services is not liable for any direct, indirect, incidental, or consequential damages resulting from your use of the platform.</p>
+
+  <h3>6. Contact</h3>
+  <p>If you have any questions regarding these terms, you may contact our support team at <a href="mailto:fivers@yahoo.com">fivers@yahoo.com</a>.</p>
+
+  <p><strong>By clicking "Create Account", you confirm that you have read, understood, and agreed to these Terms and Conditions.</strong></p>
+</div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const steps = document.querySelectorAll('.form-step');
+      const nextBtn = document.getElementById('nextBtn');
+      const prevBtn = document.getElementById('prevBtn');
+      const submitBtn = document.getElementById('submitBtn');
+      const feedback = document.getElementById('form-feedback');
+      const passwordInput = document.querySelector('input[name="password1"]');
+      const strengthBar = document.getElementById('strength-fill');
+      const modal = document.getElementById("termsModal");
+      const openModal = document.getElementById("termsLink");
+      const closeModal = document.getElementById("closeModal");
+
+      let currentStep = 0;
+
+      const showStep = (index) => {
+        steps.forEach((step, i) => step.classList.toggle('active', i === index));
+        nextBtn.style.display = index === steps.length - 1 ? 'none' : 'inline-block';
+        prevBtn.style.display = index === 0 ? 'none' : 'inline-block';
+        submitBtn.style.display = index === steps.length - 1 ? 'inline-block' : 'none';
+        feedback.textContent = '';
+        feedback.className = 'message';
+      };
+
+      const validateStep = (index) => {
+        const fields = steps[index].querySelectorAll('input');
+        for (let field of fields) {
+          if (!field.checkValidity()) {
+            field.reportValidity();
+            return false;
+          }
+        }
+        return true;
+      };
+
+      nextBtn.addEventListener('click', () => {
+        if (validateStep(currentStep)) {
+          currentStep++;
+          showStep(currentStep);
+        }
+      });
+
+      prevBtn.addEventListener('click', () => {
+        currentStep--;
+        showStep(currentStep);
+      });
+
+      if (passwordInput) {
+        passwordInput.addEventListener('input', () => {
+          const val = passwordInput.value;
+          let strength = 0;
+          if (val.length > 5) strength++;
+          if (/[A-Z]/.test(val)) strength++;
+          if (/[0-9]/.test(val)) strength++;
+          if (/[\W]/.test(val)) strength++;
+          const colors = ['#e53935', '#fbc02d', '#43a047', '#1e88e5'];
+          const widths = ['25%', '50%', '75%', '100%'];
+          strengthBar.style.width = widths[strength - 1] || '0';
+          strengthBar.style.backgroundColor = colors[strength - 1] || '#ccc';
+        });
+      }
+
+      const form = document.querySelector('form');
+      form.addEventListener('submit', (e) => {
+        const isValid = form.checkValidity();
+        if (!isValid) {
+          e.preventDefault();
+          feedback.textContent = '❌ Please complete all required fields.';
+          feedback.classList.add('error');
+        } else {
+          feedback.classList.remove('error');
+          feedback.classList.add('success');
+        }
+      });
+
+      openModal.onclick = () => modal.style.display = "block";
+      closeModal.onclick = () => modal.style.display = "none";
+      window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+      showStep(currentStep);
+    });
+
+    document.querySelectorAll('.toggle-password').forEach(icon => {
+  icon.addEventListener('click', () => {
+    const input = document.querySelector(icon.getAttribute('toggle'));
+    const isPassword = input.getAttribute('type') === 'password';
+    input.setAttribute('type', isPassword ? 'text' : 'password');
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+    icon.title = isPassword ? 'Hide Password' : 'Show Password';
+  });
+});
+
+
+  </script>
+</body>
+</html>

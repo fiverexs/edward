@@ -1,0 +1,622 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Account</title>
+    <link rel="icon" type="images/x-icon" href="{% static 'images/logo.png' %}" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+ <style>
+    /* Reset and basic styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            min-height: 100vh;
+            color: #212529;
+        }
+
+        /* Sidebar styling */
+        .sidenav {
+            width: 250px;
+            background-color: #343a40;
+            color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidenav h2 {
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .sidenav a {
+            display: flex;
+            align-items: center;
+            width: 90%;
+            padding: 12px 15px;
+            color: #ced4da;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 4px;
+            margin: 8px 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .sidenav a .icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidenav a:hover {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+
+        /* Main content area styling */
+        .content {
+            margin-left: 270px; /* Adjust margin to match sidebar width */
+            padding: 40px;
+            flex-grow: 1;
+        }
+
+        .dashboard-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-container h1 {
+            font-size: 26px;
+            color: #343a40;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .dashboard-container p {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 25px;
+        }
+
+        /* Profile card styling */
+       .profile-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #6c757d;
+    margin: 0 auto 15px auto; /* Centers the avatar */
+}
+
+.profile-info h2 {
+    font-size: 18px;
+    color: #343a40;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.profile-info p {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+
+
+
+        /* Change profile button */
+        .change-profile-button {
+            margin-top: 0px;
+            padding: 10px 20px;
+            background-color: #343a40;
+            color: #f8f9fa;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .change-profile-button:hover {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+
+        /* Modal styles */
+       /* ============================= */
+/* 🎨 MODAL WRAPPER + OVERLAY   */
+/* ============================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-overlay.active {
+    display: flex;
+}
+
+/* ============================= */
+/* 📦 MODAL BOX                  */
+/* ============================= */
+.modal {
+    background-color: #fefefe;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    width: 95%;
+    max-width: 500px;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ============================= */
+/* ❌ CLOSE BUTTON               */
+/* ============================= */
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #e9ecef;
+    border: none;
+    color: #333;
+    font-size: 18px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.modal-close:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ============================= */
+/* 🧾 MODAL FORM                 */
+/* ============================= */
+.modal h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #343a40;
+    text-align: center;
+    font-weight: 700;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================= */
+/* 🏷️ LABELS & INPUTS           */
+/* ============================= */
+.modal label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 15px;
+}
+
+.modal input {
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: #f9f9f9;
+    color: #495057;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+}
+
+/* ============================= */
+/* ✅ SUBMIT BUTTON              */
+/* ============================= */
+.modal button[type="submit"] {
+    padding: 12px;
+    background-color: #28a745;
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+
+        .user-profile {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.user-profile .profile-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #f8f9fa;
+    margin: 0 auto 10px auto; /* Centers the avatar */
+}
+
+.user-profile h2 {
+    font-size: 18px;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.user-profile p {
+    font-size: 14px;
+    color: #ced4da;
+}
+.sidenav a:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+/* Specific hover effect for Logout link */
+.sidenav a.logout-link:hover {
+    background-color: #e74c3c;  /* Red color for hover */
+    color: #ffffff;  /* White text on hover */
+}
+.content {
+      margin-left: 250px;
+      padding: 40px 20px;
+      width: calc(100% - 250px);
+      display: flex;
+      justify-content: center;
+    }
+
+    .form-container {
+  max-width: 700px;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-container:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+
+    .form-group { margin-bottom: 15px; }
+    label { font-weight: bold; color: #555; }
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .submit-button {
+      background-color: #28a745;
+      color: #fff;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .submit-button:hover {
+      background-color: #218838;
+    }
+
+    .alert {
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+
+    .alert-success { background-color: #d4edda; color: #155724; }
+    .alert-error { background-color: #f8d7da; color: #721c24; }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  background: transparent !important;  /* ✅ remove background */
+  border: none;                        /* ✅ remove border */
+  color: #343a40;                      /* icon color (adjust if needed) */
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: none !important;         /* clear any shadow */
+}
+
+@media (max-width: 768px) {
+  .sidenav {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 250px;
+    height: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background-color: #343a40;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    padding: 30px 20px;
+  }
+
+  .sidenav.show {
+    left: 0;
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  body.nav-open {
+    overflow: hidden;
+  }
+}
+.content {
+  padding: 40px;
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+}
+
+/* Keep the margin for desktop only */
+@media (min-width: 769px) {
+  .content {
+    margin-left: 270px;
+  }
+}
+
+/* No margin on mobile */
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+  }
+}
+
+
+  .change-profile-button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .modal {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .modal h2 {
+    font-size: 18px;
+  }
+
+  .modal input,
+  .modal button[type="submit"] {
+    font-size: 14px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  .submit-button {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+}
+
+
+</style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidenav">
+        <div class="user-profile">
+            <div class="profile-avatar">
+                 {% if usser.profile.profile_picture %}
+  <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture"
+       style="width: 70px; height: 70px; border-radius: 50%;">
+{% else %}
+  <i class="fas fa-user"></i>
+{% endif %}
+            </div>
+            <h2>{{ user.get_full_name }}</h2>
+            <p style="font-size: 14px; color: #ced4da;">{{ user.email }}</p>
+        </div>
+        <a href="{% url 'user_dashboard' %}"><i class="fas fa-tachometer-alt icon"></i> Dashboard</a>
+        <a href="{% url 'update_account' %}"><i class="fas fa-user icon"></i> Update Account</a>
+        <a href="{% url 'energy_monitoring' %}"><i class="fas fa-bolt icon"></i> Energy Monitoring</a>
+         <a href="{% url 'user_faq' %}"><i class="fas fa-question-circle icon"></i> FAQ</a>
+        <a href="{% url 'logout' %}" class="logout-link" onclick="return confirmLogout()">
+    <i class="fas fa-sign-out-alt icon"></i> Logout
+</a>
+    </div>
+     <button id="hamburgerToggle" class="hamburger-btn">
+  <i class="fas fa-bars"></i>
+</button>
+<div class="content">
+  <div class="form-container">
+    
+    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 10px;">
+  <h1 style="flex-grow: 1;">Update Account</h1>
+  <button class="change-profile-button" onclick="openModal()">Update Profile</button>
+</div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ user_form.username.label_tag }}
+        {{ user_form.username }}
+      </div>
+
+      
+      <div class="form-group">
+        {{ password_form.old_password.label_tag }}
+        {{ password_form.old_password }}
+      </div>
+      <div class="form-group">
+        {{ password_form.new_password1.label_tag }}
+        {{ password_form.new_password1 }}
+      </div>
+      <div class="form-group">
+        {{ password_form.new_password2.label_tag }}
+        {{ password_form.new_password2 }}
+      </div>
+
+      <button type="submit" class="submit-button">Update Account</button>
+    </form>
+  </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2><i class="fas fa-user-circle" style="margin-right: 8px;"></i> Update Profile</h2>
+
+    <form method="post" action="{% url 'change_profile' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label for="first_name">First Name</label>
+      <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+
+      <label for="last_name">Last Name</label>
+      <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="{{ user.email }}" required>
+
+      <label for="phone">Phone Number</label>
+      <input type="text" id="phone" name="phone" value="{{ user.profile.phone }}" placeholder="e.g. +1234567890">
+
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" value="{{ user.profile.address }}" placeholder="Street, City, ZIP">
+
+      <button type="submit" class="submit-button">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function confirmLogout() {
+    return confirm("Are you sure you want to log out?");
+  }
+
+  function openModal() {
+    document.getElementById("modalOverlay").classList.add("active");
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("active");
+  }
+
+  const hamburgerBtn = document.getElementById("hamburgerToggle");
+  const sidebar = document.querySelector(".sidenav");
+  const body = document.body;
+
+  hamburgerBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("show");
+    body.classList.toggle("nav-open");
+  });
+
+  // Close on outside click
+  document.addEventListener("click", function (e) {
+    if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+      sidebar.classList.remove("show");
+      body.classList.remove("nav-open");
+    }
+  });
+</script>
+
+</body>
+</html>

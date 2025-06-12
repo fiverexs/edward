@@ -1,0 +1,854 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="images/x-icon" href="{% static 'images/logo.png' %}" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+     * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    min-height: 100vh;
+    color: #212529;
+}
+
+/* Sidebar styling */
+.sidenav {
+    width: 250px;
+    background-color: #343a40;
+    color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidenav h2 {
+    font-size: 20px;
+    margin-bottom: 30px;
+    font-weight: 600;
+    text-align: center;
+    color: #ffffff;
+}
+
+.sidenav a {
+    display: flex;
+    align-items: center;
+    width: 90%;
+    padding: 12px 15px;
+    color: #ced4da;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 4px;
+    margin: 8px 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidenav a .icon {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.sidenav a:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+.content {
+    margin-left: 240px;
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Container for dashboard */
+.dashboard-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Box for energy, current, voltage etc. */
+.box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center; /* ✅ center horizontally */
+  margin-top: 20px;
+}
+
+/* Unified style for all metric boxes */
+.energy-box, .voltage-box, .current-box, .power-box, .frequency-box, .pf-box {
+  background-color: #ecf0f1;
+  color: #2980b9;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: calc(50% - 10px); /* ✅ two per row with gap */
+  min-width: 260px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect */
+.energy-box:hover, .voltage-box:hover, .current-box:hover,
+.power-box:hover, .frequency-box:hover, .pf-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Headings */
+.energy-box h2, .voltage-box h2, .current-box h2,
+.power-box h2, .frequency-box h2, .pf-box h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+/* Values */
+.energy-box p, .voltage-box p, .current-box p,
+.power-box p, .frequency-box p, .pf-box p {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Color customizations */
+.energy-box {
+    background-color: #cce5ff;
+    color: #007bff; /* Blue for Energy */
+}
+
+.voltage-box {
+    background-color: #fff3cd;
+    color: #856404; /* Yellow for Voltage */
+}
+
+.current-box {
+    background-color: #f1f1f1;
+    color: #007bff; /* Blue for Current */
+}
+
+.power-box {
+    background-color: #d1ecf1;
+    color: #17a2b8; /* Light Blue for Power */
+}
+
+.frequency-box {
+    background-color: #f9e0d0;
+    color: #f39c12; /* Orange for Frequency */
+}
+
+.pf-box {
+    background-color: #f8d7da;
+    color: #dc3545; /* Red for Power Factor */
+}
+
+/* Text inside each box */
+.energy-box, .voltage-box, .current-box, .power-box, .frequency-box, .pf-box {
+    background-color: #ecf0f1;
+    color: #2980b9;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 48%;
+    min-width: 280px;
+    transition: transform 0.3s ease;
+}
+
+.energy-box:hover, .voltage-box:hover, .current-box:hover, .power-box:hover, .frequency-box:hover, .pf-box:hover {
+    transform: translateY(-5px);
+}
+
+/* Title inside each box */
+.energy-box h2, .voltage-box h2, .current-box h2, .power-box h2, .frequency-box h2, .pf-box h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* Values inside each box */
+.energy-box p, .voltage-box p, .current-box p, .power-box p, .frequency-box p, .pf-box p {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Battery box */
+.battery-box {
+    background-color: #fef9c3;
+    color: #d97706;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.battery-box h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.battery-box p {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Total Energy Box */
+.total-box {
+    background-color: #e9f7ef;
+    color: #28a745;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.total-box h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.total-box p {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.sidenav a:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+   .user-profile .profile-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #f8f9fa;
+    margin: 0 auto 10px auto; /* Centers the avatar */
+}
+
+.user-profile h2 {
+    font-size: 18px;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.user-profile p {
+    font-size: 14px;
+    color: #ced4da;
+}
+  .user-profile {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidenav a:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+/* Specific hover effect for Logout link */
+.sidenav a.logout-link:hover {
+    background-color: #e74c3c;  /* Red color for hover */
+    color: #ffffff;  /* White text on hover */
+}
+.chart-container {
+    margin-top: 40px;
+}
+@media (max-width: 768px) {
+  .content {
+      flex-direction: column;
+      margin-left: 0; 
+  }
+  .sidenav {
+      width: 100%;
+      height: auto;
+      position: relative;
+  }
+  .box {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .energy-box, .voltage-box, .current-box,
+  .power-box, .frequency-box, .pf-box {
+    width: 100% !important;
+    max-width: 90%;
+  }
+}
+.energy-box:hover, 
+.voltage-box:hover, 
+.current-box:hover, 
+.power-box:hover, 
+.frequency-box:hover, 
+.pf-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+}
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  background: transparent !important;  /* ✅ remove background */
+  border: none;                        /* ✅ remove border */
+  color: #343a40;                      /* icon color (adjust if needed) */
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: none !important;         /* clear any shadow */
+}
+
+@media (max-width: 768px) {
+  .sidenav {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 250px;
+    height: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    background-color: #343a40;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    padding: 30px 20px;
+  }
+
+  .sidenav.show {
+    left: 0;
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
+  body.nav-open {
+    overflow: hidden;
+  }
+}
+.content {
+  padding: 40px;
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+}
+
+/* Keep the margin for desktop only */
+@media (min-width: 769px) {
+  .content {
+    margin-left: 270px;
+  }
+}
+
+/* No margin on mobile */
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+  }
+}
+/* --- Fix container padding and ensure full width on mobile --- */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 20px 15px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .chart-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+
+  .battery-box,
+  .total-box {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .box {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .box > div {
+    width: 100% !important;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .content {
+    padding: 20px 15px;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+.chart-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+    </style>
+    
+<script>
+
+        let wsURL = 'ws://solar.local:81';
+<!--        if (typeof ipAddress !== 'undefined') {-->
+<!--            wsURL = 'ws://' + ipAddress + ':81';-->
+<!--        }-->
+        console.log(wsURL);
+        let ws = new WebSocket(wsURL);
+
+        ws.onopen = function(event) {
+            ws.send('web:init');
+            console.log("WebSocket connection established.");
+        };
+
+        ws.onerror = function(error) {
+            console.log('WebSocket Error ' + error);
+        };
+
+        ws.onclose = function(event) {
+    console.log("WebSocket connection closed. Reconnecting...");
+    setTimeout(() => {
+        ws = new WebSocket(wsURL);
+    }, 5000); // Try reconnecting after 5 seconds
+};
+
+        ws.onmessage = function(event) {
+           let myArray = event.data.split(",");
+
+           if (event.data.includes(":init")) {
+               console.log("ignoring ->", event.data);
+            } else if (event.data.includes("web:"))  {
+               console.log("ignoring ->", event.data);
+            } else if (event.data.includes("CONNECTED"))  {
+               console.log("ignoring ->", event.data);
+            } else {
+                if (myArray.length === 1) return;
+                console.log(myArray);
+
+                let totalEnergy =  (parseInt(myArray[5].substring(3)) + parseInt(myArray[6].substring(3))) + "kWh";
+                document.getElementById('totalEnergy').innerText = totalEnergy;
+
+                if (myArray[1] != "V1:nan") {
+                    let batteryRaw = parseFloat(myArray[0].substring(2));  // e.g. "B:13.02" → 13.02
+let percentage = Math.min((batteryRaw / 13) * 100, 100);  // Cap at 100%
+let finalValue = percentage.toFixed(2) + "%";
+
+document.getElementById('batteryValue').innerText = finalValue;
+document.getElementById('batteryVoltage').innerText = batteryRaw.toFixed(2) + "V";
+
+// 🔴 Battery warning below 11V
+if (batteryRaw < 11.0) {
+    document.getElementById('batteryVoltage').style.color = 'red';
+} else {
+    document.getElementById('batteryVoltage').style.color = '';
+}
+
+let batteryBox = document.querySelector('.battery-box');
+
+if (percentage > 75) {
+    batteryBox.style.backgroundColor = "#d4edda";
+    batteryBox.style.color = "#155724";
+} else if (percentage > 40) {
+    batteryBox.style.backgroundColor = "#fff3cd";
+    batteryBox.style.color = "#856404";
+} else {
+    batteryBox.style.backgroundColor = "#f8d7da";
+    batteryBox.style.color = "#721c24";
+}
+                }
+
+                if (myArray[1] === "V1:nan") {
+                } else {
+                    let voltage1 = myArray[1].substring(3);
+                    document.getElementById('voltage1Value').innerText = voltage1 + "V";
+                }
+
+                if (myArray[1] === "V2:nan") {
+                } else {
+                    let voltage2 = myArray[2].substring(3);
+                    document.getElementById('voltage2Value').innerText = voltage2 + "V";
+                }
+
+
+                let current1 = myArray[3].substring(3);
+                document.getElementById('current1Value').innerText = current1 + "A";
+
+                let current2 = myArray[4].substring(3);
+                document.getElementById('current2Value').innerText = current2 + "A";
+
+                let power1 = myArray[5].substring(3);
+document.getElementById('power1Value').innerText = power1 + "W";
+
+let power2 = myArray[6].substring(3);
+document.getElementById('power2Value').innerText = power2 + "W";
+
+// ⏱️ Add a label for time
+let now = new Date();
+let timeLabel = now.getHours().toString().padStart(2, '0') + ":" + 
+                now.getMinutes().toString().padStart(2, '0') + ":" + 
+                now.getSeconds().toString().padStart(2, '0');
+
+// 🔼 Add to chart
+if (powerChart) {
+    powerChart.data.labels.push(timeLabel);
+    powerChart.data.datasets[0].data.push(parseFloat(power1));
+    powerChart.data.datasets[1].data.push(parseFloat(power2));
+
+    // 🔄 Optional: keep chart clean (max 20 points)
+    if (powerChart.data.labels.length > 20) {
+        powerChart.data.labels.shift();
+        powerChart.data.datasets[0].data.shift();
+        powerChart.data.datasets[1].data.shift();
+    }
+
+    powerChart.update();
+}
+
+                let energy1 = myArray[7].substring(3);
+                document.getElementById('energy1Value').innerText = energy1 + "kWh";
+
+                let energy2 = myArray[8].substring(3);
+                document.getElementById('energy2Value').innerText = energy2 + "kWh";
+
+                let freq1 = myArray[9].substring(3);
+                document.getElementById('freq1Value').innerText = freq1 + "Hz";
+
+                let freq2 = myArray[10].substring(3);
+                document.getElementById('freq2Value').innerText = freq2 + "Hz";
+
+                let pf1 = myArray[11].substring(3);
+                document.getElementById('pf1Value').innerText = pf1;
+
+                let pf2 = myArray[12].substring(3); 
+                document.getElementById('pf2Value').innerText = pf2;
+
+                const newLabel = '.'; // You can change this to dynamic label
+                const newData = Math.floor(Math.random() * 100); // Random data point
+<!--                newData = "-"
+                addData(energyChart, newLabel, parseInt(newData));
+                removeData(energyChart);
+
+            }
+
+<!--            else {-->
+<!--                console.log(event.data);-->
+<!--                const newLabel = 'July'; // You can change this to dynamic label-->
+<!--                const newData = Math.floor(Math.random() * 100); // Random data point-->
+<!--                newData = event.data.substring(12);-->
+<!--                addData(myLineChart, newLabel, parseInt(newData));-->
+<!--                addData(myLineChart2, newLabel, parseInt(newData));-->
+
+<!--                updateHeartbeatChart(myLineChart2, newData);-->
+<!--                updateHeartbeatChartAndAddData(myLineChart2, newLabel, parseInt(newData));-->
+<!--                addData2();-->
+
+<!--            }-->
+        };
+
+        // Function to dynamically add data to the chart
+        function addData(chart, label, data) {
+            chart.data.labels.push(label); // Add new label for the X-axis
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data.push(data); // Add new data point to Y-axis
+            });
+            chart.update(); // Update the chart with the new data
+        }
+
+<!--        // Function to dynamically add data to the chart-->
+<!--        function addData(chart, label, data) {-->
+<!--            // Add new label for the X-axis-->
+<!--            chart.data.labels.push(label);-->
+<!--            // Add new data point to Y-axis-->
+<!--            chart.data.datasets[0].data.push(data);-->
+
+<!--            // Update the chart with the new data-->
+<!--            chart.update();-->
+<!--        }-->
+
+<!--        function removeData(chart) {-->
+<!--            const lastDataPoint = chart.data.datasets[0].data[chart.data.datasets[0].data.length - 1]; // Get the last data point-->
+<!--            if (pointCount > 15) {-->
+<!--                chart.data.labels.pop(); // Remove the last label from the X-axis-->
+<!--                chart.data.datasets.forEach((dataset) => {-->
+<!--                    dataset.data.pop(); // Remove the last data point from the Y-axis-->
+<!--                });-->
+<!--                chart.update(); // Update the chart to reflect changes-->
+<!--            } else {-->
+<!--                //alert("The last data point is less than or equal to 10 and will not be removed.");-->
+<!--            }-->
+<!--        }-->
+
+        // Function to dynamically remove the first data point only if it's greater than 10
+        function removeData(chart) {
+            const meta = chart.getDatasetMeta(0); // Access the first dataset's meta information
+            const dataPoints = meta.data; // Get the array of data points (dots)
+            const pointCount = dataPoints.length; // Get the number of points
+            console.log(`Number of data points (dots): ${pointCount}`);
+            const firstDataPoint = chart.data.datasets[0].data[0]; // Get the first data point
+
+            if (pointCount > 15) {
+                // Remove the first label from the X-axis
+                chart.data.labels.shift();
+
+                // Remove the first data point from the Y-axis
+                chart.data.datasets[0].data.shift();
+
+                // Update the chart to reflect changes
+                chart.update();
+            } else {
+<!--                alert("The first data point is less than or equal to 10 and will not be removed.");-->
+            }
+        }
+    </script>   
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidenav">
+        <div class="user-profile">
+            <div class="profile-avatar">
+                 {% if usser.profile.profile_picture %}
+  <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture"
+       style="width: 70px; height: 70px; border-radius: 50%;">
+{% else %}
+  <i class="fas fa-user"></i>
+{% endif %}
+            </div>
+            <h2>{{ user.get_full_name }}</h2>
+            <p style="font-size: 14px; color: #ced4da;">{{ user.email }}</p>
+        </div>
+        <a href="{% url 'user_dashboard' %}"><i class="fas fa-tachometer-alt icon"></i> Dashboard</a>
+        <a href="{% url 'update_account' %}"><i class="fas fa-user icon"></i> Update Account</a>
+        <a href="{% url 'energy_monitoring' %}"><i class="fas fa-bolt icon"></i> Energy Monitoring</a>
+         <a href="{% url 'user_faq' %}"><i class="fas fa-question-circle icon"></i> FAQ</a>
+      <a href="{% url 'logout' %}" class="logout-link" onclick="return confirmLogout()">
+    <i class="fas fa-sign-out-alt icon"></i> Logout
+</a>
+
+    </div>
+     <button id="hamburgerToggle" class="hamburger-btn">
+  <i class="fas fa-bars"></i>
+</button>
+
+    <!-- Main Content Area -->
+    <div class="content">
+      <div class="dashboard-container">
+      <h1>System Overview</h1>
+    <p>Track your energy consumption </p>
+
+    <!-- Total Energy Box -->
+    <div class="total-box">
+        <h2>Total Energy Consumed</h2>
+        <p id="totalEnergy">kWh</p>
+    </div>
+
+    <!-- Battery Percentage Box -->
+    <div class="battery-box">
+    <h2>Battery Status</h2>
+    <p>
+        <span id="batteryValue">0%</span> &nbsp; | &nbsp;
+        <span id="batteryVoltage">0V</span>
+    </p>
+</div>
+
+  
+
+   <div class="box">
+    <!-- Energy Boxes -->
+    <div class="energy-box">
+        <h2>Energy 1</h2>
+        <p id="energy1Value">N/A </p>
+    </div>
+    <div class="energy-box">
+        <h2>Energy 2</h2>
+        <p id="energy2Value">N/A </p>
+    </div>
+</div>
+
+<div class="box">
+    <!-- Voltage Boxes -->
+    <div class="voltage-box">
+        <h2>Voltage 1</h2>
+        <p id="voltage1Value">N/A</p>
+    </div>
+    <div class="voltage-box">
+        <h2>Voltage 2</h2>
+        <p id="voltage2Value">N/A</p>
+    </div>
+</div>
+
+<div class="box">
+    <!-- Current Boxes -->
+    <div class="current-box">
+        <h2>Current 1</h2>
+        <p id="current1Value">N/A</p>
+    </div>
+    <div class="current-box">
+        <h2>Current 2</h2>
+        <p id="current2Value">N/A</p>
+    </div>
+</div>
+
+<div class="box">
+    <!-- Power Boxes -->
+    <div class="power-box">
+        <h2>Appliance Power 1</h2>
+        <p id="power1Value">N/A</p>
+    </div>
+    <div class="power-box">
+        <h2>Appliance Power 2</h2>
+        <p id="power2Value">N/A</p>
+    </div>
+</div>
+
+<div class="box">
+    <!-- Frequency Boxes -->
+    <div class="frequency-box">
+        <h2>Frequency 1</h2>
+        <p id="freq1Value">N/A</p>
+    </div>
+    <div class="frequency-box">
+        <h2>Frequency 2</h2>
+        <p id="freq2Value">N/A</p>
+    </div>
+</div>
+
+<div class="box">
+    <!-- Power Factor Boxes -->
+    <div class="pf-box">
+        <h2>Power Factor 1</h2>
+        <p id="pf1Value">N/A</p>
+    </div>
+    <div class="pf-box">
+        <h2>Power Factor 2</h2>
+        <p id="pf2Value">N/A</p>
+    </div>
+</div>
+
+
+
+  <div class="chart-container">
+    <h2>Power Monitoring</h2>
+    <canvas id="powerChart"></canvas>
+</div>
+
+</div>
+</div>
+
+
+
+    <!-- CHART JS/ POWER -->
+    <script>
+       const ctx = document.getElementById('powerChart').getContext('2d');
+    const powerChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ times_in_seconds|safe }},
+            datasets: [
+                {
+                    label: 'Power 1 (W)',
+                    data: {{ power1_values|safe }},
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: 'Power 2 (W)',
+                    data: {{ power2_values|safe }},
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Power (W)'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+function confirmLogout() {
+        return confirm("Are you sure you want to log out?");
+    }
+
+const hamburgerBtn = document.getElementById("hamburgerToggle");
+  const sidebar = document.querySelector(".sidenav");
+  const body = document.body;
+
+  hamburgerBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("show");
+    body.classList.toggle("nav-open");
+  });
+
+  // Close on outside click
+  document.addEventListener("click", function (e) {
+    if (!sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+      sidebar.classList.remove("show");
+      body.classList.remove("nav-open");
+    }
+  });
+
+    </script>
+</body>
+</html>
